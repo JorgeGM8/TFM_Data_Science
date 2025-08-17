@@ -15,9 +15,9 @@ df = df.drop('PERIOD', axis=1)
 report = TableReport(df)
 
 # Guardar reporte HTML
-with open('reports/report.html', 'w') as f:
+with open('reports/report_autoinvestor.html', 'w') as f:
     f.write(report.html())
-print('\n--> Reporte guardado en reports/report.html\n')
+print('\n--> Reporte guardado en reports/report_autoinvestor.html\n')
 
 print(f"""Datos de interés:
       - {df.shape[0]} datos de viviendas.
@@ -63,3 +63,8 @@ plt.subplots_adjust(top=0.93)
 plt.savefig('reports/figures/price_evo.png', dpi=300, bbox_inches='tight')
 
 print('\n--> Gráficos de precios guardados en reports/figures/price_evo.png\n')
+
+# Guardar csv con datos limpios
+df.to_csv('data/processed/autoinvestor_procesado.csv')
+
+print('\n--> Datos procesados guardados en data/processed/autoinvestor_procesado.csv\n')
