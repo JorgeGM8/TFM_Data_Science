@@ -1,15 +1,13 @@
 import pandas as pd
-import numpy as np
 from skrub import TableReport
-import matplotlib.pyplot as plt
 
 df = pd.read_csv('data/datos_demograficos_ine.csv', sep=';', encoding='ISO-8859-1')
 
 # Eliminación de columnas sin uso o vacías
-df = df.drop(['Municipios', 'Secciones'])
+df = df.drop(['Municipios', 'Secciones'], axis=1)
 
 # Mapeo de distritos con nombres
-mapeo = {
+distritos = {
     '01': 'Centro',
     '02': 'Arganzuela',
     '03': 'Retiro',
@@ -33,18 +31,23 @@ mapeo = {
     '21': 'Barajas'
 }
 
+df['Distritos'] = df['Distritos'].str[-2:].map(distritos)
 
+# Pivotar dataframe para colocar indicadores como columnas
+df_pivot = df.pivot(
+    index=['Distritos', 'Periodo'],
+    columns='Indicadores demográficos',
+    values='Total'
+).reset_index()
 
-report = TableReport(df)
+report = TableReport(df_pivot)
 
 # Guardar reporte HTML
 with open('reports/report_demograficos.html', 'w') as f:
     f.write(report.html())
 print('\n--> Reporte guardado en reports/report_demograficos.html\n')
 
-# print(f"""Datos de interés:
-#       - {df.shape[0]} datos de viviendas.
-#       - Precio de venta medio: {round(df['PRICE_SALE'].mean())}€.
-#       - Precio de alquiler medio: {round(df['PRICE_RENT'].mean())}€.
-#       - Periodo: {min(df[df['YEAR'] == min(df['YEAR'])]['MONTH'])}/{min(df['YEAR'])} - {max(df[df['YEAR'] == max(df['YEAR'])]['MONTH'])}/{max(df['YEAR'])}
-# """)
+# Guardar datos procesados
+df_pivot.to_csv('data/processed/datos_demograficos_ine_procesado.csv')
+
+print('\n--> Datos procesados guardados en data/processed/datos_demograficos_ine_procesado.csv\n')
