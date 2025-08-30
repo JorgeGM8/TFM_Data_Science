@@ -1,0 +1,169 @@
+,Año,Distrito,Renta neta media por persona
+0,2015,01. Centro,15512
+1,2015,02. Arganzuela,16855
+2,2015,03. Retiro,20900
+3,2015,04. Salamanca,23009
+4,2015,05. Chamartín,24155
+5,2015,06. Tetuán,14563
+6,2015,07. Chamberí,21558
+7,2015,08. Fuencarral-El Pardo,18109
+8,2015,09. Moncloa-Aravaca,21689
+9,2015,10. Latina,12057
+10,2015,11. Carabanchel,10758
+11,2015,12. Usera,9276
+12,2015,13. Puente de Vallecas,9386
+13,2015,14. Moratalaz,13714
+14,2015,15. Ciudad Lineal,14767
+15,2015,16. Hortaleza,17662
+16,2015,17. Villaverde,9642
+17,2015,18. Villa de Vallecas,11688
+18,2015,19. Vicálvaro,11375
+19,2015,20. San Blas-Canillejas,13171
+20,2015,21. Barajas,17257
+21,2016,01. Centro,16147
+22,2016,02. Arganzuela,17306
+23,2016,03. Retiro,21504
+24,2016,04. Salamanca,24433
+25,2016,05. Chamartín,25969
+26,2016,06. Tetuán,14970
+27,2016,07. Chamberí,22499
+28,2016,08. Fuencarral-El Pardo,18573
+29,2016,09. Moncloa-Aravaca,22152
+30,2016,10. Latina,12232
+31,2016,11. Carabanchel,10872
+32,2016,12. Usera,9395
+33,2016,13. Puente de Vallecas,9545
+34,2016,14. Moratalaz,13944
+35,2016,15. Ciudad Lineal,15048
+36,2016,16. Hortaleza,18277
+37,2016,17. Villaverde,9756
+38,2016,18. Villa de Vallecas,11925
+39,2016,19. Vicálvaro,11695
+40,2016,20. San Blas-Canillejas,13404
+41,2016,21. Barajas,17641
+42,2017,01. Centro,16711
+43,2017,02. Arganzuela,17738
+44,2017,03. Retiro,21598
+45,2017,04. Salamanca,24683
+46,2017,05. Chamartín,26267
+47,2017,06. Tetuán,15180
+48,2017,07. Chamberí,22897
+49,2017,08. Fuencarral-El Pardo,18661
+50,2017,09. Moncloa-Aravaca,22792
+51,2017,10. Latina,12370
+52,2017,11. Carabanchel,10988
+53,2017,12. Usera,9552
+54,2017,13. Puente de Vallecas,9706
+55,2017,14. Moratalaz,14135
+56,2017,15. Ciudad Lineal,15111
+57,2017,16. Hortaleza,18620
+58,2017,17. Villaverde,9875
+59,2017,18. Villa de Vallecas,12114
+60,2017,19. Vicálvaro,11941
+61,2017,20. San Blas-Canillejas,13559
+62,2017,21. Barajas,17807
+63,2018,01. Centro,17932
+64,2018,02. Arganzuela,18473
+65,2018,03. Retiro,22706
+66,2018,04. Salamanca,26255
+67,2018,05. Chamartín,28190
+68,2018,06. Tetuán,15742
+69,2018,07. Chamberí,24112
+70,2018,08. Fuencarral-El Pardo,19551
+71,2018,09. Moncloa-Aravaca,24686
+72,2018,10. Latina,12749
+73,2018,11. Carabanchel,11327
+74,2018,12. Usera,9860
+75,2018,13. Puente de Vallecas,10045
+76,2018,14. Moratalaz,14637
+77,2018,15. Ciudad Lineal,15815
+78,2018,16. Hortaleza,19759
+79,2018,17. Villaverde,10164
+80,2018,18. Villa de Vallecas,12545
+81,2018,19. Vicálvaro,12353
+82,2018,20. San Blas-Canillejas,14100
+83,2018,21. Barajas,18514
+84,2019,01. Centro,18789
+85,2019,02. Arganzuela,19088
+86,2019,03. Retiro,23262
+87,2019,04. Salamanca,25770
+88,2019,05. Chamartín,27634
+89,2019,06. Tetuán,16354
+90,2019,07. Chamberí,24881
+91,2019,08. Fuencarral-El Pardo,20105
+92,2019,09. Moncloa-Aravaca,24025
+93,2019,10. Latina,13179
+94,2019,11. Carabanchel,11679
+95,2019,12. Usera,10211
+96,2019,13. Puente de Vallecas,10402
+97,2019,14. Moratalaz,15101
+98,2019,15. Ciudad Lineal,16349
+99,2019,16. Hortaleza,20044
+100,2019,17. Villaverde,10540
+101,2019,18. Villa de Vallecas,12976
+102,2019,19. Vicálvaro,12916
+103,2019,20. San Blas-Canillejas,14545
+104,2019,21. Barajas,19026
+105,2020,01. Centro,18314
+106,2020,02. Arganzuela,19284
+107,2020,03. Retiro,23227
+108,2020,04. Salamanca,25932
+109,2020,05. Chamartín,27719
+110,2020,06. Tetuán,16336
+111,2020,07. Chamberí,24913
+112,2020,08. Fuencarral-El Pardo,20217
+113,2020,09. Moncloa-Aravaca,24138
+114,2020,10. Latina,13261
+115,2020,11. Carabanchel,11713
+116,2020,12. Usera,10239
+117,2020,13. Puente de Vallecas,10445
+118,2020,14. Moratalaz,15294
+119,2020,15. Ciudad Lineal,16436
+120,2020,16. Hortaleza,19890
+121,2020,17. Villaverde,10591
+122,2020,18. Villa de Vallecas,13099
+123,2020,19. Vicálvaro,13123
+124,2020,20. San Blas-Canillejas,14537
+125,2020,21. Barajas,19138
+126,2021,01. Centro,19199
+127,2021,02. Arganzuela,20103
+128,2021,03. Retiro,23925
+129,2021,04. Salamanca,25956
+130,2021,05. Chamartín,28233
+131,2021,06. Tetuán,17026
+132,2021,07. Chamberí,25275
+133,2021,08. Fuencarral-El Pardo,20671
+134,2021,09. Moncloa-Aravaca,24659
+135,2021,10. Latina,13719
+136,2021,11. Carabanchel,12275
+137,2021,12. Usera,10797
+138,2021,13. Puente de Vallecas,10941
+139,2021,14. Moratalaz,15667
+140,2021,15. Ciudad Lineal,16890
+141,2021,16. Hortaleza,20500
+142,2021,17. Villaverde,11059
+143,2021,18. Villa de Vallecas,13605
+144,2021,19. Vicálvaro,13849
+145,2021,20. San Blas-Canillejas,15115
+146,2021,21. Barajas,19482
+147,2022,01. Centro,20587
+148,2022,02. Arganzuela,21383
+149,2022,03. Retiro,25407
+150,2022,04. Salamanca,28140
+151,2022,05. Chamartín,30506
+152,2022,06. Tetuán,18062
+153,2022,07. Chamberí,27076
+154,2022,08. Fuencarral-El Pardo,21947
+155,2022,09. Moncloa-Aravaca,26694
+156,2022,10. Latina,14375
+157,2022,11. Carabanchel,12764
+158,2022,12. Usera,11430
+159,2022,13. Puente de Vallecas,11452
+160,2022,14. Moratalaz,16437
+161,2022,15. Ciudad Lineal,17808
+162,2022,16. Hortaleza,21766
+163,2022,17. Villaverde,11563
+164,2022,18. Villa de Vallecas,14274
+165,2022,19. Vicálvaro,14832
+166,2022,20. San Blas-Canillejas,15902
+167,2022,21. Barajas,20788
