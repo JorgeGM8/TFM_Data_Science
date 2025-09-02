@@ -111,3 +111,8 @@ with open('reports/reporte_venta_alquiler.html', 'w') as f:
     f.write(TableReport(df_continuo).html())
 
 print('--> Reporte guardado en "reports/reporte_venta_alquiler.html".')
+
+# Guardar csv con datos procesados
+df_continuo.to_csv('data/processed/venta_alquiler_procesado.csv')
+
+print('--> Datos procesados guardados en "data/processed/venta_alquiler_procesado.csv".')
