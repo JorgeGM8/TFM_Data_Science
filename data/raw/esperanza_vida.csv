@@ -1,0 +1,442 @@
+﻿Año;Distrito;Esperanza de vida
+2004;01. Centro;81,5
+2004;02. Arganzuela;82,6
+2004;03. Retiro;83
+2004;04. Salamanca;83
+2004;05. Chamartín;82,7
+2004;06. Tetuán;81
+2004;07. Chamberí;82,6
+2004;08. Fuencarral-El Pardo;81,9
+2004;09. Moncloa-Aravaca;83,1
+2004;10. Latina;82,5
+2004;11. Carabanchel;81,8
+2004;12. Usera;81,4
+2004;13. Puente de Vallecas;80,2
+2004;14. Moratalaz;82,6
+2004;15. Ciudad Lineal;82,4
+2004;16. Hortaleza;82,5
+2004;17. Villaverde;81,3
+2004;18. Villa de Vallecas;79,6
+2004;19. Vicálvaro;80,4
+2004;20. San Blas-Canillejas;81,4
+2004;21. Barajas;82,3
+2005;01. Centro;80,5
+2005;02. Arganzuela;82,1
+2005;03. Retiro;83,4
+2005;04. Salamanca;83,2
+2005;05. Chamartín;83,1
+2005;06. Tetuán;81,9
+2005;07. Chamberí;82,6
+2005;08. Fuencarral-El Pardo;81,8
+2005;09. Moncloa-Aravaca;83,1
+2005;10. Latina;82,7
+2005;11. Carabanchel;82,2
+2005;12. Usera;81
+2005;13. Puente de Vallecas;80,5
+2005;14. Moratalaz;82,3
+2005;15. Ciudad Lineal;82,5
+2005;16. Hortaleza;81,7
+2005;17. Villaverde;81,4
+2005;18. Villa de Vallecas;81
+2005;19. Vicálvaro;80,8
+2005;20. San Blas-Canillejas;80,6
+2005;21. Barajas;82,8
+2006;01. Centro;81,1
+2006;02. Arganzuela;83,1
+2006;03. Retiro;83,7
+2006;04. Salamanca;83
+2006;05. Chamartín;83,4
+2006;06. Tetuán;83,1
+2006;07. Chamberí;83,4
+2006;08. Fuencarral-El Pardo;82,9
+2006;09. Moncloa-Aravaca;83,3
+2006;10. Latina;83,2
+2006;11. Carabanchel;81,9
+2006;12. Usera;81,3
+2006;13. Puente de Vallecas;81,3
+2006;14. Moratalaz;83
+2006;15. Ciudad Lineal;82,9
+2006;16. Hortaleza;82,9
+2006;17. Villaverde;82,1
+2006;18. Villa de Vallecas;82,7
+2006;19. Vicálvaro;83,4
+2006;20. San Blas-Canillejas;82,1
+2006;21. Barajas;83,7
+2007;01. Centro;81,4
+2007;02. Arganzuela;83,4
+2007;03. Retiro;84,1
+2007;04. Salamanca;83
+2007;05. Chamartín;83,8
+2007;06. Tetuán;82,9
+2007;07. Chamberí;82,1
+2007;08. Fuencarral-El Pardo;82,9
+2007;09. Moncloa-Aravaca;82,9
+2007;10. Latina;83,1
+2007;11. Carabanchel;82
+2007;12. Usera;81,3
+2007;13. Puente de Vallecas;80,7
+2007;14. Moratalaz;82,6
+2007;15. Ciudad Lineal;82,6
+2007;16. Hortaleza;82,8
+2007;17. Villaverde;81,5
+2007;18. Villa de Vallecas;81,7
+2007;19. Vicálvaro;81,4
+2007;20. San Blas-Canillejas;81,2
+2007;21. Barajas;82,3
+2008;01. Centro;81,8
+2008;02. Arganzuela;83,3
+2008;03. Retiro;83,3
+2008;04. Salamanca;83,7
+2008;05. Chamartín;84,5
+2008;06. Tetuán;82,9
+2008;07. Chamberí;82,9
+2008;08. Fuencarral-El Pardo;82,9
+2008;09. Moncloa-Aravaca;83,5
+2008;10. Latina;83,4
+2008;11. Carabanchel;82,7
+2008;12. Usera;81,2
+2008;13. Puente de Vallecas;81,3
+2008;14. Moratalaz;82,8
+2008;15. Ciudad Lineal;83,7
+2008;16. Hortaleza;83,1
+2008;17. Villaverde;81,7
+2008;18. Villa de Vallecas;81,9
+2008;19. Vicálvaro;82,6
+2008;20. San Blas-Canillejas;82,1
+2008;21. Barajas;83,5
+2009;01. Centro;82,1
+2009;02. Arganzuela;83,6
+2009;03. Retiro;84
+2009;04. Salamanca;84,1
+2009;05. Chamartín;84,7
+2009;06. Tetuán;83,5
+2009;07. Chamberí;84,2
+2009;08. Fuencarral-El Pardo;83,9
+2009;09. Moncloa-Aravaca;84,4
+2009;10. Latina;83,4
+2009;11. Carabanchel;83,1
+2009;12. Usera;82
+2009;13. Puente de Vallecas;82,6
+2009;14. Moratalaz;84,1
+2009;15. Ciudad Lineal;83,8
+2009;16. Hortaleza;83,4
+2009;17. Villaverde;82,8
+2009;18. Villa de Vallecas;82,6
+2009;19. Vicálvaro;83,1
+2009;20. San Blas-Canillejas;83,2
+2009;21. Barajas;83,3
+2010;01. Centro;83
+2010;02. Arganzuela;84,4
+2010;03. Retiro;84,8
+2010;04. Salamanca;84,4
+2010;05. Chamartín;84,2
+2010;06. Tetuán;83,5
+2010;07. Chamberí;84
+2010;08. Fuencarral-El Pardo;83,9
+2010;09. Moncloa-Aravaca;84,2
+2010;10. Latina;84,4
+2010;11. Carabanchel;83,4
+2010;12. Usera;83,1
+2010;13. Puente de Vallecas;82,3
+2010;14. Moratalaz;83,7
+2010;15. Ciudad Lineal;84,2
+2010;16. Hortaleza;84,2
+2010;17. Villaverde;83,3
+2010;18. Villa de Vallecas;83,7
+2010;19. Vicálvaro;83,3
+2010;20. San Blas-Canillejas;82,8
+2010;21. Barajas;83,3
+2011;01. Centro;83,2
+2011;02. Arganzuela;84,6
+2011;03. Retiro;85,2
+2011;04. Salamanca;84,8
+2011;05. Chamartín;84,9
+2011;06. Tetuán;84
+2011;07. Chamberí;84,3
+2011;08. Fuencarral-El Pardo;84,1
+2011;09. Moncloa-Aravaca;83,8
+2011;10. Latina;84,4
+2011;11. Carabanchel;83,1
+2011;12. Usera;82,2
+2011;13. Puente de Vallecas;82,8
+2011;14. Moratalaz;84
+2011;15. Ciudad Lineal;83,8
+2011;16. Hortaleza;83,9
+2011;17. Villaverde;83,6
+2011;18. Villa de Vallecas;83,5
+2011;19. Vicálvaro;84,4
+2011;20. San Blas-Canillejas;83,6
+2011;21. Barajas;83,8
+2012;01. Centro;83,1
+2012;02. Arganzuela;84,6
+2012;03. Retiro;84,9
+2012;04. Salamanca;85,2
+2012;05. Chamartín;84,3
+2012;06. Tetuán;83,6
+2012;07. Chamberí;84,4
+2012;08. Fuencarral-El Pardo;84
+2012;09. Moncloa-Aravaca;83,7
+2012;10. Latina;84,4
+2012;11. Carabanchel;83,4
+2012;12. Usera;82,9
+2012;13. Puente de Vallecas;83
+2012;14. Moratalaz;83,9
+2012;15. Ciudad Lineal;84,6
+2012;16. Hortaleza;84,1
+2012;17. Villaverde;83,3
+2012;18. Villa de Vallecas;83,2
+2012;19. Vicálvaro;84,4
+2012;20. San Blas-Canillejas;83,2
+2012;21. Barajas;84,2
+2013;01. Centro;83,4
+2013;02. Arganzuela;85,8
+2013;03. Retiro;85,2
+2013;04. Salamanca;85,1
+2013;05. Chamartín;85
+2013;06. Tetuán;84,4
+2013;07. Chamberí;84,5
+2013;08. Fuencarral-El Pardo;84,4
+2013;09. Moncloa-Aravaca;84,2
+2013;10. Latina;84,6
+2013;11. Carabanchel;84,2
+2013;12. Usera;83,5
+2013;13. Puente de Vallecas;83,5
+2013;14. Moratalaz;84,5
+2013;15. Ciudad Lineal;85
+2013;16. Hortaleza;85,1
+2013;17. Villaverde;83,6
+2013;18. Villa de Vallecas;83,5
+2013;19. Vicálvaro;84,2
+2013;20. San Blas-Canillejas;83,7
+2013;21. Barajas;84,5
+2014;01. Centro;83,3
+2014;02. Arganzuela;85,9
+2014;03. Retiro;85,3
+2014;04. Salamanca;85,2
+2014;05. Chamartín;85,1
+2014;06. Tetuán;84,4
+2014;07. Chamberí;84,5
+2014;08. Fuencarral-El Pardo;84,6
+2014;09. Moncloa-Aravaca;84,4
+2014;10. Latina;84,6
+2014;11. Carabanchel;84,2
+2014;12. Usera;83,5
+2014;13. Puente de Vallecas;83,6
+2014;14. Moratalaz;84,7
+2014;15. Ciudad Lineal;85,1
+2014;16. Hortaleza;85,3
+2014;17. Villaverde;83,8
+2014;18. Villa de Vallecas;83,8
+2014;19. Vicálvaro;84,5
+2014;20. San Blas-Canillejas;83,8
+2014;21. Barajas;84,7
+2015;01. Centro;83,4
+2015;02. Arganzuela;84,6
+2015;03. Retiro;85,2
+2015;04. Salamanca;84,8
+2015;05. Chamartín;84,7
+2015;06. Tetuán;83,6
+2015;07. Chamberí;84,1
+2015;08. Fuencarral-El Pardo;84,7
+2015;09. Moncloa-Aravaca;84,8
+2015;10. Latina;84,6
+2015;11. Carabanchel;83,8
+2015;12. Usera;83,5
+2015;13. Puente de Vallecas;82,6
+2015;14. Moratalaz;84,6
+2015;15. Ciudad Lineal;84,8
+2015;16. Hortaleza;83,9
+2015;17. Villaverde;83
+2015;18. Villa de Vallecas;83,5
+2015;19. Vicálvaro;84,9
+2015;20. San Blas-Canillejas;83,8
+2015;21. Barajas;83,5
+2016;01. Centro;83,7
+2016;02. Arganzuela;85,6
+2016;03. Retiro;85,7
+2016;04. Salamanca;85,8
+2016;05. Chamartín;85,7
+2016;06. Tetuán;85,1
+2016;07. Chamberí;85,4
+2016;08. Fuencarral-El Pardo;85,2
+2016;09. Moncloa-Aravaca;84,8
+2016;10. Latina;85,5
+2016;11. Carabanchel;84,4
+2016;12. Usera;83,9
+2016;13. Puente de Vallecas;83,2
+2016;14. Moratalaz;84,6
+2016;15. Ciudad Lineal;85,6
+2016;16. Hortaleza;85,3
+2016;17. Villaverde;84,5
+2016;18. Villa de Vallecas;84,4
+2016;19. Vicálvaro;84
+2016;20. San Blas-Canillejas;84,4
+2016;21. Barajas;84,7
+2017;01. Centro;83,7
+2017;02. Arganzuela;84,8
+2017;03. Retiro;85,8
+2017;04. Salamanca;85,4
+2017;05. Chamartín;85,5
+2017;06. Tetuán;84,2
+2017;07. Chamberí;85,2
+2017;08. Fuencarral-El Pardo;85,1
+2017;09. Moncloa-Aravaca;84,7
+2017;10. Latina;84,6
+2017;11. Carabanchel;85
+2017;12. Usera;84,1
+2017;13. Puente de Vallecas;83,3
+2017;14. Moratalaz;85,5
+2017;15. Ciudad Lineal;85,2
+2017;16. Hortaleza;85,1
+2017;17. Villaverde;84,8
+2017;18. Villa de Vallecas;84,1
+2017;19. Vicálvaro;84,2
+2017;20. San Blas-Canillejas;84,1
+2017;21. Barajas;86,5
+2018;01. Centro;84,5
+2018;02. Arganzuela;85,6
+2018;03. Retiro;86
+2018;04. Salamanca;85,9
+2018;05. Chamartín;86,1
+2018;06. Tetuán;84,8
+2018;07. Chamberí;85,2
+2018;08. Fuencarral-El Pardo;85,4
+2018;09. Moncloa-Aravaca;86,1
+2018;10. Latina;85,5
+2018;11. Carabanchel;84,8
+2018;12. Usera;84,4
+2018;13. Puente de Vallecas;83,9
+2018;14. Moratalaz;85,3
+2018;15. Ciudad Lineal;85,8
+2018;16. Hortaleza;85,5
+2018;17. Villaverde;84,8
+2018;18. Villa de Vallecas;83,9
+2018;19. Vicálvaro;84,9
+2018;20. San Blas-Canillejas;84,7
+2018;21. Barajas;86,1
+2019;01. Centro;84,6
+2019;02. Arganzuela;86,3
+2019;03. Retiro;86,5
+2019;04. Salamanca;86,2
+2019;05. Chamartín;86,7
+2019;06. Tetuán;85,5
+2019;07. Chamberí;86
+2019;08. Fuencarral-El Pardo;85,6
+2019;09. Moncloa-Aravaca;85,6
+2019;10. Latina;85,2
+2019;11. Carabanchel;85,4
+2019;12. Usera;84,9
+2019;13. Puente de Vallecas;84,5
+2019;14. Moratalaz;86,1
+2019;15. Ciudad Lineal;86,6
+2019;16. Hortaleza;85,9
+2019;17. Villaverde;84,7
+2019;18. Villa de Vallecas;84,3
+2019;19. Vicálvaro;84,7
+2019;20. San Blas-Canillejas;84,8
+2019;21. Barajas;85,8
+2020;01. Centro;82,7
+2020;02. Arganzuela;82,4
+2020;03. Retiro;83,5
+2020;04. Salamanca;83,8
+2020;05. Chamartín;83
+2020;06. Tetuán;81,5
+2020;07. Chamberí;83,7
+2020;08. Fuencarral-El Pardo;82,7
+2020;09. Moncloa-Aravaca;82,6
+2020;10. Latina;82,4
+2020;11. Carabanchel;81,6
+2020;12. Usera;81,5
+2020;13. Puente de Vallecas;80,5
+2020;14. Moratalaz;82,5
+2020;15. Ciudad Lineal;82,9
+2020;16. Hortaleza;83,3
+2020;17. Villaverde;81,8
+2020;18. Villa de Vallecas;80,6
+2020;19. Vicálvaro;81,9
+2020;20. San Blas-Canillejas;82,2
+2020;21. Barajas;83,6
+2021;01. Centro;83,6
+2021;02. Arganzuela;85,1
+2021;03. Retiro;85,4
+2021;04. Salamanca;85,6
+2021;05. Chamartín;85,8
+2021;06. Tetuán;85,1
+2021;07. Chamberí;85,3
+2021;08. Fuencarral-El Pardo;85,9
+2021;09. Moncloa-Aravaca;85,2
+2021;10. Latina;85,3
+2021;11. Carabanchel;85,1
+2021;12. Usera;84,4
+2021;13. Puente de Vallecas;83,7
+2021;14. Moratalaz;84,5
+2021;15. Ciudad Lineal;85,3
+2021;16. Hortaleza;85,6
+2021;17. Villaverde;84,1
+2021;18. Villa de Vallecas;84,6
+2021;19. Vicálvaro;85,6
+2021;20. San Blas-Canillejas;84,5
+2021;21. Barajas;85,7
+2022;01. Centro;84,7
+2022;02. Arganzuela;85,7
+2022;03. Retiro;86
+2022;04. Salamanca;86,1
+2022;05. Chamartín;86
+2022;06. Tetuán;84,5
+2022;07. Chamberí;85,6
+2022;08. Fuencarral-El Pardo;85,7
+2022;09. Moncloa-Aravaca;85,9
+2022;10. Latina;85,5
+2022;11. Carabanchel;85
+2022;12. Usera;84,7
+2022;13. Puente de Vallecas;83,9
+2022;14. Moratalaz;85,6
+2022;15. Ciudad Lineal;86
+2022;16. Hortaleza;85,5
+2022;17. Villaverde;85,2
+2022;18. Villa de Vallecas;84,4
+2022;19. Vicálvaro;84,6
+2022;20. San Blas-Canillejas;84,3
+2022;21. Barajas;85,5
+2023;01. Centro;85,2
+2023;02. Arganzuela;85,9
+2023;03. Retiro;86,3
+2023;04. Salamanca;86,9
+2023;05. Chamartín;86,4
+2023;06. Tetuán;86
+2023;07. Chamberí;86,2
+2023;08. Fuencarral-El Pardo;86,1
+2023;09. Moncloa-Aravaca;86,4
+2023;10. Latina;86
+2023;11. Carabanchel;85,9
+2023;12. Usera;84,8
+2023;13. Puente de Vallecas;84,6
+2023;14. Moratalaz;86,4
+2023;15. Ciudad Lineal;86,9
+2023;16. Hortaleza;86,4
+2023;17. Villaverde;85,9
+2023;18. Villa de Vallecas;85
+2023;19. Vicálvaro;85,9
+2023;20. San Blas-Canillejas;85,6
+2023;21. Barajas;86,4
+2024;01. Centro;86,9
+2024;02. Arganzuela;86,1
+2024;03. Retiro;86,8
+2024;04. Salamanca;84,5
+2024;05. Chamartín;86,8
+2024;06. Tetuán;85,2
+2024;07. Chamberí;86,5
+2024;08. Fuencarral-El Pardo;84,3
+2024;09. Moncloa-Aravaca;84,7
+2024;10. Latina;84,5
+2024;11. Carabanchel;82,8
+2024;12. Usera;84,2
+2024;13. Puente de Vallecas;82,3
+2024;14. Moratalaz;82,5
+2024;15. Ciudad Lineal;88,4
+2024;16. Hortaleza;89,4
+2024;17. Villaverde;88,8
+2024;18. Villa de Vallecas;88,8
+2024;19. Vicálvaro;87,7
+2024;20. San Blas-Canillejas;88,1
+2024;21. Barajas;88,1
