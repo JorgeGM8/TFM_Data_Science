@@ -3,8 +3,13 @@ from skrub import TableReport
 try:
     from utils.cleaning import convertir_formato_europeo, normaliza_distrito
 except ModuleNotFoundError:
-    print('--> Ejecuta el archivo con "python -m src.limpieza_venta_alquiler" para importar correctamente las funciones.')
+    print('--> Ejecuta el archivo con "python -m src.unificacion_datos" para importar correctamente las funciones.')
     quit()
+except ImportError as e:
+    print(f'--> Error de importación: {e}')
+    quit()
+except Exception as e:
+    print(f'--> Error inesperado: {type(e).__name__}: {e}')
 import re
 
 #  1. Obtenemos los datos de precio de venta y de alquiler de las viviendas
@@ -16,15 +21,15 @@ path_alquiler = 'data/raw/alquiler_vivienda.csv'
 try:
     df_venta = pd.read_csv(path_venta, sep=';', decimal=',', thousands='.')
 except FileNotFoundError:
-    print(f'No se encontro el archivo: {path_venta}. Por favor comprueba que la ruta sea la correcta.')
+    print(f'No se encontró el archivo: {path_venta}. Por favor comprueba que la ruta sea la correcta.')
 
 try:
     df_alquiler = pd.read_csv(path_alquiler, sep=';', decimal=',', thousands='.')
 except FileNotFoundError:
-    print(f'No se encontro el archivo: {path_alquiler}. Por favor comprueba que la ruta sea la correcta.')
+    print(f'No se encontró el archivo: {path_alquiler}. Por favor comprueba que la ruta sea la correcta.')
 
 # 1.2 Transformar valores de cada distrito a numericos y valores faltantes a nulos
-columnas_distritos = df_venta.columns.difference(['Año', 'Mes'])
+columnas_distritos = df_venta.columns.difference(['Año', 'Mes']).tolist()
 df_venta[columnas_distritos] = df_venta[columnas_distritos].apply(convertir_formato_europeo)
 df_alquiler[columnas_distritos] = df_alquiler[columnas_distritos].apply(convertir_formato_europeo)
 
@@ -96,7 +101,7 @@ df_anual = (
     })
 )
 
-# 1.8 Estandarizamos los encabezados de 'venta_alquiler_procesado.csv'
+# 1.8 Estandarizamos los encabezados de "venta_alquiler_procesado.csv"
 df_venta_alquiler = df_anual.copy()
 
 df_venta_alquiler.columns = [re.sub(r'\s+', ' ', c).strip() for c in df_venta_alquiler.columns]
@@ -120,9 +125,15 @@ print('--> Datos procesados guardados en "data/processed/venta_alquiler_procesad
 
 # -------------------------------------------------------------------------------------------- #
 
-# 2. Añadimos a nuestro CSV la columna de esperanza de vida
+# 2. Estandarización del dataset de esperanza_vida y añadir al CSV
 
-df_esperanza_vida = pd.read_csv('data/raw/esperanza_vida.csv', sep=';', encoding='utf-8', decimal=',')
+# 2.1 Cargar el archivo
+path_esperanza_vida = 'data/raw/esperanza_vida.csv'
+
+try:
+    df_esperanza_vida = pd.read_csv('data/raw/esperanza_vida.csv', sep=';', encoding='utf-8', decimal=',')
+except FileNotFoundError:
+    print(f'No se encontró el archivo: {path_esperanza_vida}. Por favor comprueba que la ruta sea la correcta.')
 
 # 2.1 Normalizar columnas de esperanza de vida, renombrando la columna año
 df_esperanza_vida = df_esperanza_vida.rename(columns={'Año':'Ano', 'año':'Ano', 'Esperanza de vida':'Esperanza_vida'})
@@ -140,28 +151,40 @@ print('--> Añadido esperanza de vida al dataset.')
 
 # -------------------------------------------------------------------------------------------- #
 
-# 3. Estandarización del dataset de renta_media_persona y añadir al CSV
+# 3. Estandarización del dataset de renta_media_hogar y añadir al CSV
 
 # 3.1 Cargar el archivo con encoding y separador ;
-path_renta = 'data/raw/renta_media.csv'
+path_rentas = 'data/raw/renta_media_hogar.csv'
 
 try:
-    df_renta = pd.read_csv(path_renta, sep=';', encoding='utf-8', thousands='.')
+    df_rentas = pd.read_csv(path_rentas, sep=';', encoding='utf-8', thousands='.')
 except FileNotFoundError:
-    print(f'No se encontró el archivo: {path_renta}. Por favor comprueba que la ruta sea la correcta.')
+    print(f'No se encontró el archivo: {path_rentas}. Por favor comprueba que la ruta sea la correcta.')
 
-# 3.2 Unificar columna año y renta media
-df_renta = df_renta.rename(columns={'Año':'Ano', 'año':'Ano', 'Renta neta media por persona':'Renta_media_persona'})
+# 3.2 Eliminar columnas innecesarias
+df_rentas = df_rentas.drop(columns=[
+    'Media de la renta neta por unidad de consumo',
+    'Mediana de la renta neta por unidad de consumo'
+])
 
-# 3.3 Unificar columna 'Distrito'
-df_renta['Distrito'] = df_renta['Distrito'].map(normaliza_distrito)
+# 3.3 Unificar columnas
+df_rentas = df_rentas.rename(columns={
+    'Año': 'Ano',
+    'Renta neta media por persona': 'Renta_neta_persona',
+    'Renta neta media por hogar': 'Renta_neta_hogar',
+    'Renta bruta media por persona': 'Renta_bruta_persona',
+    'Renta media bruta por hogar': 'Renta_bruta_hogar'
+})
+
+# 3.4 Unificar columna 'Distrito'
+df_rentas['Distrito'] = df_rentas['Distrito'].map(normaliza_distrito)
 
 # 3.4 Unir datasets (Ano + Distrito) y volcarlo al CSV
-df_completo = df_completo.merge(df_renta, on=['Ano','Distrito'], how='left')
-df_completo.to_csv('data/processed/completo_renta_media.csv', index=False, encoding='utf-8')
+df_completo = df_completo.merge(df_rentas, on=['Ano','Distrito'], how='left')
+df_completo.to_csv('data/processed/completo_renta_media_hogar.csv', index=False, encoding='utf-8')
 
-print('--> Datos procesados guardados en "data/processed/completo_renta_media.csv".')
-print('--> Añadido renta media por persona al dataset.')
+print('--> Datos procesados guardados en "data/processed/completo_renta_media_hogar.csv".')
+print('--> Añadido renta media (neta y bruta) por persona y hogar al dataset.')
 
 # -------------------------------------------------------------------------------------------- #
 
@@ -301,7 +324,7 @@ print('--> Añadido apartamentos turísticos disponibles al dataset.')
 
 # -------------------------------------------------------------------------------------------- #
 
-# 7. Calculo de densidad de zonas verdes y de densidad de población
+# 7. Cálculo de densidad de zonas verdes y de densidad de población
 
 # 7.1 Cargar el archivo con encoding de superficie de distrito
 path_superficie = 'data/raw/superficie_distrito.csv'
@@ -354,8 +377,9 @@ df_completo.to_csv('data/processed/gentrificacion_madrid.csv', index=False, enco
 print('--> Datos procesados guardados en "data/processed//gentrificacion_madrid.csv".')
 print('--> Añadido densidad de poblacion y porcentaje de zonas verdes al dataset.')
 
+# -------------------------------------------------------------------------------------------- #
 
-# 7.12 Guardar reporte completo
+# 8. Guardar reporte completo
 with open('reports/reporte_gentrificacion_madrid.html', 'w', encoding='utf-8') as f:
     f.write(TableReport(df_completo).html())
 

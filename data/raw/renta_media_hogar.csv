@@ -1,8 +1,4 @@
-﻿D. Economía;;;;;;;
-Renta;;;;;;;
-3.1. Indicador de renta disponible;;;;;;;
-3.1.1 Indicadores de renta media y mediana;;;;;;;
-Distrito;Ano;Renta neta media por persona;Renta neta media por hogar;Media de la renta neta por unidad de consumo;Mediana de la renta neta por unidad de consumo;Renta bruta media por persona;Renta media bruta por hogar
+﻿Distrito;Año;Renta neta media por persona;Renta neta media por hogar;Media de la renta neta por unidad de consumo;Mediana de la renta neta por unidad de consumo;Renta bruta media por persona;Renta media bruta por hogar
 Ciudad de Madrid;2015;15.257;38.539;22.927;17.850;19.172;48.430
 Ciudad de Madrid;2016;15.717;39.613;23.548;17.850;19.771;49.831
 Ciudad de Madrid;2017;15.930;40.195;23.949;18.550;20.161;50.872
@@ -179,7 +175,3 @@ Ciudad de Madrid;2022;18.632;46.651;27.889;22.050;23.984;60.049
 21. Barajas;2020;19.138;50.985;29.553;24.850;24.570;65.454
 21. Barajas;2021;19.482;51.400;29.915;25.550;25.207;66.506
 21. Barajas;2022;20.788;54.343;31.942;26.950;27.125;70.909
-;;;;;;;
-;;;;;;;
-"Fuente: Fuente: Atlas de distribución de la renta de los hogares. Instituto Nacional de Estadística (INE)
-";;;;;;;
