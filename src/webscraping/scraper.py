@@ -36,7 +36,7 @@ def list_to_csv(data, csv_filename):
 
     try:
         with open(csv_filename, mode='w', newline='', encoding='utf-8') as file:
-            writer = csv.DictWriter(file, fieldnames=fieldnames)
+            writer = csv.DictWriter(file, fieldnames=fieldnames, delimiter=';')
 
             # Write header (fieldnames)
             writer.writeheader()
