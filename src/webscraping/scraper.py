@@ -11,11 +11,9 @@ except ModuleNotFoundError:
     quit()
 except Exception as e:
     print(f'Error encontrado al importar librerías de fetch.py: {e}')
-import os
 from dotenv import load_dotenv
 
 load_dotenv()
-
 raw = os.getenv("DISTRICTS", "")
 DISTRICTS = raw.split(",") if raw else []
 
@@ -239,10 +237,16 @@ def get_div_content(url, div_class, use_stealth=False, max_retries=2):
             response = None
             
             if use_stealth:
-                print("🥷 Usando modo stealth...")
+                if use_fast:
+                    print("🥷⏩ Usando modo stealth y rápido...")
+                else:
+                    print("🥷 Usando modo stealth...")
                 response = fetch_page_with_stealth(url)
+            elif use_fast:
+                print("⏩ Usando modo rápido...")
+                response = fetch_page(url, retry_count=1)  # Un solo intento interno
             else:
-                print("🌐 Usando método estándar...")
+                print("🌐 Usando modo estándar...")
                 response = fetch_page(url, retry_count=1)  # Un solo intento interno
             
             if not response:
@@ -317,10 +321,20 @@ def get_url_for_district_page(district, page, venta_o_alquiler):
 if __name__ == "__main__":
 
     lista_final = []
-    inicio = int(input('Introduce página de inicio: '))
-    final = int(input('Introduce página final: '))
-    venta_o_alquiler = int(input('¿Venta (1) o alquiler (2)?: '))
+    while True:
+        try:
+            inicio = int(input('Introduce página de inicio: '))
+            final = int(input('Introduce página final: '))
+            venta_o_alquiler = int(input('¿Venta (1) o alquiler (2)?: '))
+        except ValueError:
+            print('Por favor, introduce un número entero.')
+            continue
+        break
+    
     use_stealth = input('¿Usar modo stealth? (s/n): ').lower().startswith('s')
+    use_fast = input('¿Usar modo rápido? (s/n): ').lower().startswith('s')
+    if use_fast:
+        use_fast = input('¡Atención! El modo rápido aumenta el riesgo de bloqueo de IP. ¿Continuar? (s/n): ').lower().startswith('s')
     
     if venta_o_alquiler == 1:
         venta_o_alquiler = 'venta-viviendas'
@@ -372,7 +386,10 @@ if __name__ == "__main__":
             
             # Espera aleatoria entre páginas (si no es la última)
             if page != final and not se_usa_cache:
-                random_sleep(15, 45)  # Espera más larga entre páginas
+                if use_fast:
+                    random_sleep(1, 5)
+                else:
+                    random_sleep(15, 45)  # Espera más larga entre páginas
         
         # Guardar datos del distrito
         if district_data:
@@ -382,7 +399,10 @@ if __name__ == "__main__":
         # Espera extra entre distritos
         if district != DISTRICTS[-1] and not se_usa_cache:  # Si no es el último distrito
             print("Esperando antes del siguiente distrito...")
-            time.sleep(random.uniform(60, 120))  # 1-2 minutos entre distritos
+            if use_fast:
+                time.sleep(random.uniform(5, 10))
+            else:
+                time.sleep(random.uniform(60, 120)) # 1-2 minutos entre distritos
 
     # Guardar archivo final
     if lista_final:

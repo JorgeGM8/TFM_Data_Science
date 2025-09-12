@@ -110,10 +110,8 @@ def fetch_page(url, retry_count=2):
     Método principal con reintentos
     """
     for attempt in range(retry_count):
-        print(f"\n--- Intento {attempt + 1} de {retry_count} ---")
-        
         response = fetch_page_simple(url)
-        
+
         if response:
             response_lower = response.lower()
             block_indicators = ['too many requests', 'uso indebido']
