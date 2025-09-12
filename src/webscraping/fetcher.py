@@ -86,7 +86,7 @@ def fetch_page_simple(url):
         print(f"Página obtenida, tamaño: {len(page_source)} caracteres")
 
         # --- comprobar bloqueo ---
-        block_indicators = ['too many requests']
+        block_indicators = ['too many requests', 'uso indebido']
         if any(ind in page_source.lower() for ind in block_indicators):
             print("⚠️ Posible bloqueo detectado. Guardando debug.html")
             with open("debug.html", "w", encoding="utf-8") as f:
@@ -116,7 +116,7 @@ def fetch_page(url, retry_count=2):
         
         if response:
             response_lower = response.lower()
-            block_indicators = ['too many requests']
+            block_indicators = ['too many requests', 'uso indebido']
             
             # solo bloqueo si no hay listados de pisos
             if any(ind in response_lower for ind in block_indicators) and "item-info-container" not in response_lower:

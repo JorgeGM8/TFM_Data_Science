@@ -4,7 +4,13 @@ from random import randint
 import random
 import os
 import csv
-from src.webscraping.fetcher import fetch_page, fetch_page_with_stealth
+try:
+    from src.webscraping.fetcher import fetch_page, fetch_page_with_stealth
+except ModuleNotFoundError:
+    print(f'Ejecuta con "python -m src.webscraping.scraper" para importar correctamente las librerías.')
+    quit()
+except Exception as e:
+    print(f'Error encontrado al importar librerías de fetch.py: {e}')
 import os
 from dotenv import load_dotenv
 
@@ -194,7 +200,8 @@ def check_for_captcha_or_block(content):
     
     content_lower = content.lower()
     block_indicators = [
-        'too many requests'
+        'too many requests',
+        'uso indebido'
     ]
     
     return any(indicator in content_lower for indicator in block_indicators)
@@ -330,7 +337,7 @@ if __name__ == "__main__":
         print(f"\n=== Procesando distrito: {district} ===")
         district_data = []
         
-        for page in range(inicio, final):
+        for page in range(inicio, final + 1):
             url = get_url_for_district_page(district, page, venta_o_alquiler)
             print(f"\nScraping página {page}: {url}")
             
@@ -364,7 +371,7 @@ if __name__ == "__main__":
             print(f"Extraídos {len(content)} elementos de página {page}")
             
             # Espera aleatoria entre páginas (si no es la última)
-            if page != final-1 and not se_usa_cache:
+            if page != final and not se_usa_cache:
                 random_sleep(15, 45)  # Espera más larga entre páginas
         
         # Guardar datos del distrito
@@ -373,15 +380,16 @@ if __name__ == "__main__":
             print(f"Guardados {len(district_data)} elementos para distrito {district}")
         
         # Espera extra entre distritos
-        if district != DISTRICTS[-1]:  # Si no es el último distrito
+        if district != DISTRICTS[-1] and not se_usa_cache:  # Si no es el último distrito
             print("Esperando antes del siguiente distrito...")
             time.sleep(random.uniform(60, 120))  # 1-2 minutos entre distritos
 
     # Guardar archivo final
     if lista_final:
-        list_to_csv(lista_final, f'properties_all_{venta_o_alquiler}_pags_{inicio}-{final}.csv')
+        list_to_csv(lista_final, f'data/raw/properties_all_{venta_o_alquiler}_pags_{inicio}-{final}.csv')
         print(f"\n=== COMPLETADO ===")
         print(f"Total de propiedades extraídas: {len(lista_final)}")
         print(f"Total de errores: {total_errors}")
+        print(f"Guardando csv final en data/raw/properties_all_{venta_o_alquiler}_pags_{inicio}-{final}.csv")
     else:
         print("No se pudo extraer ningún dato")
