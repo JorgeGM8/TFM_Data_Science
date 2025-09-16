@@ -13,12 +13,21 @@ def convertir_formato_europeo(col):
 def normaliza_distrito(x: str) -> str:
     if pd.isna(x):
         return x
-    s = str(x)
+    s = str(x).lower()
     # Quitar prefijo de numeración tipo "01. Centro"
     s = re.sub(r"^\s*\d{1,2}\.\s*", "", s)
     # Quitar tildes
     s = "".join(ch for ch in unicodedata.normalize("NFKD", s) if not unicodedata.combining(ch))
     # Dejar solo letras (incluye Ñ/ñ); elimina números, espacios y símbolos
     s = re.sub(r"[^A-Za-zÑñ]", "", s)
+    # Mapeo manual de casos especiales
+    replace_map = {
+        "barriodesalamanca": "salamanca",
+        "fuencarral": "fuencarralelpardo",
+        "moncloa": "moncloaaravaca",
+        "sanblas": "sanblascanillejas"
+    }
+    if s in replace_map:
+        s = replace_map[s]
     # Mayúsculas
     return s.upper()
