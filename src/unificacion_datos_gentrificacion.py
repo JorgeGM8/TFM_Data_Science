@@ -372,9 +372,9 @@ df_completo['Zonas_verdes%'] = df_completo['Zonas_verdes_ha'] / df_completo['Sup
 df_completo = df_completo.drop(columns=['Zonas_verdes_ha'])
 
 # 7.11 Volcado CSV completo
-df_completo.to_csv('data/processed/gentrificacion_madrid.csv', index=False, encoding='utf-8')
+df_completo.to_csv('data/final/gentrificacion_madrid.csv', index=False, encoding='utf-8')
 
-print('--> Datos procesados guardados en "data/processed//gentrificacion_madrid.csv".')
+print('--> Datos procesados guardados en "data/final/gentrificacion_madrid.csv".')
 print('--> Añadido densidad de poblacion y porcentaje de zonas verdes al dataset.')
 
 # -------------------------------------------------------------------------------------------- #

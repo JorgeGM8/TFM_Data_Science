@@ -53,7 +53,6 @@ def unify_files(files, operacion):
         df = normalize_columns(df)
         df["distrito"] = df["distrito"].apply(normaliza_distrito)
         df["operacion"] = operacion
-        df["origen_archivo"] = p.name
         frames.append(df)
 
     if not frames:
@@ -85,9 +84,10 @@ def extract_years(text):
 # Regex para tipo de vivienda: busca si aparece algún tipo y lo añade
 def extract_tipo_vivienda(text):
     # Posibles tipos de vivienda
-    TYPES = ["mansión", "tríplex", "dúplex", "ático",
-            "apartamento", "chalet", "estudio",
-            "loft", "piso", "casa"
+    TYPES = [
+        "mansión", "tríplex", "dúplex",
+        "ático", "apartamento", "chalet",
+        "estudio", "loft", "piso"
     ]
     if not isinstance(text, str):
         return None
@@ -98,7 +98,7 @@ def extract_tipo_vivienda(text):
 # Regex para baños: busca si sale información de número de baños y los añade
 def extract_banos(text):
     if not isinstance(text, str):
-        return None
+        return 1
     text_l = text.lower()
     # Busca "1 baño", "2 baños", "un aseo", etc.
     match = re.search(r"(\d+)\s*(bañ?os?|aseos?|retretes?)", text_l)
@@ -107,3 +107,46 @@ def extract_banos(text):
     if re.search(r"\bun\s*(bañ?o|bano|aseo|retrete)\b", text_l):
         return 1 # Añade un baño
     return 1 # Si no pone nada, se da por hecho que tiene un baño
+
+# Seleccionar planta, si es exterior y si tiene ascensor.
+def extract_planta_ext_ascensor(text: str):
+    """
+    Función que detecta en la columna "descripción" el número de planta, si es exterior o interior y si tiene ascensor.
+    """
+    # Normalizar a minúsculas
+    t = str(text).lower()
+    
+    # --- Planta ---
+    planta = None
+    # Casos especiales
+    if "semi-sótano" in t or "semisotano" in t or "sótano" in t or "sotano" in t:
+        planta = -1
+    elif "entreplanta" in t or "bajo" in t:
+        planta = 0
+    else:
+        # Buscar "planta <n>ª" con regex
+        m = re.search(r"planta\s*(-?\d+)", t)
+        if m:
+            num = int(m.group(1))
+            if num == -1:
+                planta = 0
+            else:
+                planta = num
+    
+    # --- Interior / Exterior ---
+    if "exterior" in t:
+        exterior = True
+    elif "interior" in t:
+        exterior = False
+    else:
+        exterior = False
+    
+    # --- Ascensor ---
+    if "sin ascensor" in t:
+        ascensor = False
+    elif "con ascensor" in t:
+        ascensor = True
+    else:
+        ascensor = False
+    
+    return planta, exterior, ascensor
