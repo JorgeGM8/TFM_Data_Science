@@ -26,18 +26,18 @@ def normalize_columns(df: pd.DataFrame) -> pd.DataFrame:
     Normalización de columnas de dataframe para cambiar los nombres adecuadamente.
     """
     cols_map = {
-        "precio":"precio",
-        "localidad":"localidad",
-        "tamaño":"tamanio",
-        "tamano":"tamanio",
-        "tamanio":"tamanio",
-        "habitaciones":"habitaciones",
-        "descripcion":"descripcion",
-        "link":"link",
-        "descripcion_larga":"descripcion_larga",
-        "distrito":"distrito",
+        "precio":"Precio",
+        "localidad":"Localidad",
+        "tamaño":"Tamano",
+        "tamano":"Tamano",
+        "tamanio":"Tamano",
+        "habitaciones":"Habitaciones",
+        "descripcion":"Descripcion",
+        "link":"Link",
+        "descripcion_larga":"Descripcion_larga",
+        "distrito":"Distrito",
     }
-    expected = ["precio","localidad","tamanio","habitaciones","descripcion","link","descripcion_larga","distrito"]
+    expected = ["Precio","Localidad","Tamano","Habitaciones","Descripcion","Link","Descripcion_larga","Distrito"]
     df = df.copy()
     df.columns = [c.strip().lower() for c in df.columns]
     df = df.rename(columns={c: cols_map.get(c, c) for c in df.columns})
@@ -51,8 +51,8 @@ def unify_files(files, operacion):
     for p in files:
         df = read_csv_safely(p)
         df = normalize_columns(df)
-        df["distrito"] = df["distrito"].apply(normaliza_distrito)
-        df["operacion"] = operacion
+        df["Distrito"] = df["Distrito"].apply(normaliza_distrito)
+        df["Operacion"] = operacion
         frames.append(df)
 
     if not frames:
@@ -114,7 +114,10 @@ def extract_planta_ext_ascensor(text: str):
     Función que detecta en la columna "descripción" el número de planta, si es exterior o interior y si tiene ascensor.
     """
     # Normalizar a minúsculas
-    t = str(text).lower()
+    try:
+        t = str(text).lower()
+    except Exception:
+        return None, False, False
     
     # --- Planta ---
     planta = None
