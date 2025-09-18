@@ -90,10 +90,15 @@ def extract_tipo_vivienda(text):
         "estudio", "loft", "piso"
     ]
     if not isinstance(text, str):
-        return None
+        return 'apartamento'
     text_l = text.lower()
     found = [t for t in TYPES if re.search(rf"\b{t}\b", text_l)]
-    return found[0] if found else None
+
+    # Cambiar a "apartamento" si pone "piso"
+    if found:
+        if found[0] == "piso":
+            found[0] = "apartamento"
+    return found[0] if found else "apartamento"
 
 # Regex para baños: busca si sale información de número de baños y los añade
 def extract_banos(text):
