@@ -1,4 +1,4 @@
-distrito,habitaciones,operacion,precio,tamanio,garaje,trastero,piscina,terraza,planta,exterior,ascensor,anio_construccion,anio_reforma,tipo_vivienda,banos
+Distrito,Habitaciones,Operacion,Precio,Tamano,Garaje,Trastero,Piscina,Terraza,Planta,Exterior,Ascensor,Ano_construccion,Ano_reforma,Tipo_vivienda,banos
 CENTRO,2,alquiler,1275,45.0,False,False,False,False,0.0,False,False,,,apartamento,1
 CENTRO,1,alquiler,1750,79.0,False,False,False,False,5.0,True,True,,,piso,1
 CENTRO,2,alquiler,2700,96.0,False,False,False,False,3.0,True,True,1910.0,,piso,2
