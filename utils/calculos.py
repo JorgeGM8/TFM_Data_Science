@@ -1,4 +1,5 @@
 import pandas as pd
+import numpy as np
 
 def calcular_alquiler_venta(df: pd.DataFrame,
                             tipo: str,
@@ -56,3 +57,40 @@ def calcular_alquiler_venta(df: pd.DataFrame,
     )
     
     return df
+
+
+def ajustar_predicciones(df):
+    ajustados = []
+
+    # Guardar orden original
+    orden_original = df.index
+
+    # Agrupar sin ordenar alfabéticamente
+    for (distrito, operacion, ano), grupo in df.groupby(["Distrito", "Operacion", "Ano"], sort=False):
+        
+        # valor real medio según operación
+        if operacion == "venta":
+            real_medio = grupo["Precio_venta"].mean()
+        else:
+            real_medio = grupo["Precio_alquiler"].mean()
+        
+        pred_medio = grupo["Precio_predicho"].mean()
+        sesgo = real_medio - pred_medio
+
+        # desviación típica de errores
+        errores = (real_medio - grupo["Precio_predicho"])
+        sigma = errores.std()
+
+        # aplicar corrección + ruido
+        grupo = grupo.copy()
+        grupo["Precio_predicho_ajustado"] = (
+            grupo["Precio_predicho"] + sesgo + np.random.normal(0, sigma, size=len(grupo))
+        )
+        
+        ajustados.append(grupo)
+
+    # Concatenar y reordenar igual que el df original
+    df_ajustado = pd.concat(ajustados)
+    df_ajustado = df_ajustado.loc[orden_original]
+
+    return df_ajustado
