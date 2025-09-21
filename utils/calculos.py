@@ -1,5 +1,6 @@
 import pandas as pd
 import numpy as np
+import warnings
 
 def calcular_alquiler_venta(df: pd.DataFrame,
                             tipo: str,
@@ -182,6 +183,8 @@ def ajustar_predicciones_hibrido(df:pd.DataFrame,
     --------
     DataFrame con columna "Precio_ajustado".
     """
+    # Silenciar avisos ya revisados
+    warnings.filterwarnings('ignore', category=FutureWarning)
     
     # Paso 1: Ajuste por grupos
     df_grupos = ajustar_predicciones_con_limites(
@@ -201,7 +204,7 @@ def ajustar_predicciones_hibrido(df:pd.DataFrame,
     
     # Suavización individual sobre el precio ya ajustado por grupos
     desv_rel = (df_final['Precio_ajustado'] - df_final['Precio_real']) / df_final['Precio_real']
-    desv_rel = desv_rel.fillna(0).replace([np.inf, -np.inf], 0)
+    desv_rel = desv_rel.fillna(0).infer_objects(copy=False).replace([np.inf, -np.inf], 0)
     
     factor = np.exp(-alpha * np.abs(desv_rel))
     ajuste_individual = df_final['Precio_real'] + factor * (df_final['Precio_ajustado'] - df_final['Precio_real'])
