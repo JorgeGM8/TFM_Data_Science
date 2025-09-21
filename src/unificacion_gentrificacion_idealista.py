@@ -1,6 +1,6 @@
 import pandas as pd
 try:
-    from utils.calculos import calcular_alquiler_venta, ajustar_predicciones
+    from utils.calculos import calcular_alquiler_venta, ajustar_precios_simple, ajustar_predicciones_con_limites, ajustar_predicciones_hibrido
 except ModuleNotFoundError:
     print('--> Usa "python -m src.unificacion_gentrificacion_idealista" para importar correctamente las funciones.')
     quit()
@@ -40,7 +40,7 @@ print('--> Predicciones a pasado de venta completadas.')
 df_completo.to_csv('data/processed/viviendas_2011_2024_nodrop.csv', index=False)
 
 # Ajustar predicciones
-df_ajustado = ajustar_predicciones(df_completo)
+df_ajustado = ajustar_predicciones_hibrido(df_completo, alpha=0.8, max_desv_venta=0.2, max_desv_alquiler=0.1, seed=42)
 df_ajustado.to_csv('data/final/prueba.csv', index=False)
 
 # Eliminación de fila de "Precio" (valores obsoletos) y otras columnas que ya no se usarán
