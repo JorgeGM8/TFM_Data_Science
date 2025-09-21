@@ -50,7 +50,7 @@ def precios_distrito_ano(df: pd.DataFrame, operacion: str, valor: str):
     print(f'--> Gráfica guardada en reports/figures/precio_{operacion}_{valor}.png')
     plt.show()
 
-def comparar_precios(df: pd.DataFrame, operacion: str):
+def comparar_precios(df: pd.DataFrame, operacion: str, ajustado: bool):
     """
     Gráfica que muestra comparativa de precio medio real vs predicho, en general, para cada distrito. Para venta o alquiler.
 
@@ -60,8 +60,15 @@ def comparar_precios(df: pd.DataFrame, operacion: str):
         Dataframe de donde se sacan los datos.
     operacion : str
         Seleccionar "venta" o "alquiler".
+    tipo : str
+        "True" para indicar que el precio predicho ha sido ajustado; "False" para indicar que aún no.
     """
-
+    if ajustado:
+        col_predicho = 'Precio_ajustado'
+        momento = 'posterior'
+    else:
+        col_predicho = 'Precio_predicho'
+        momento = 'previo'
     distritos = df['Distrito'].unique()
 
     plt.figure(figsize=(12, 6))
@@ -70,7 +77,7 @@ def comparar_precios(df: pd.DataFrame, operacion: str):
     mean_real = df[df['Operacion'] == operacion].groupby('Distrito').agg(
         precio_completo=(f'Precio_{operacion}', lambda x: (x * df.loc[x.index, 'Tamano']).mean())
     ).reindex(distritos)
-    mean_predicted = df[df['Operacion'] == operacion].groupby('Distrito')['Precio_predicho'].mean().reindex(distritos)
+    mean_predicted = df[df['Operacion'] == operacion].groupby('Distrito')[col_predicho].mean().reindex(distritos)
 
     # Plot de ambos
     plt.plot(mean_real.index, mean_real['precio_completo'], 'b-', label='Precio real')
@@ -80,9 +87,9 @@ def comparar_precios(df: pd.DataFrame, operacion: str):
     plt.grid()
     plt.xlabel('Distrito')
     plt.ylabel('Precio (€)')
-    plt.title(f'Comparación de precios de {operacion} reales vs predichos por distrito (periodo 2011-2024) - Previo a ajuste')
+    plt.title(f'Comparación de precios de {operacion} reales vs predichos por distrito (periodo 2011-2024) - {momento} a ajuste')
     plt.legend()
     plt.tight_layout()
-    plt.savefig(f'../reports/figures/precio_{operacion}_real_vs_predicho_previo.png', dpi=300)
-    print(f'--> Gráfica guardada en reports/figures/precio_{operacion}_real_vs_predicho_previo.png')
+    plt.savefig(f'../reports/figures/precio_{operacion}_real_vs_predicho_{momento}.png', dpi=300)
+    print(f'--> Gráfica guardada en reports/figures/precio_{operacion}_real_vs_predicho_{momento}.png')
     plt.show()
