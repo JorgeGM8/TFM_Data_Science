@@ -51,6 +51,17 @@ df_all = pd.concat([df_alq[all_cols], df_vta[all_cols]], ignore_index=True)
 # Eliminar duplicados
 df_all = df_all.drop_duplicates(subset=["Link", "Operacion"], keep="first")
 
+# Eliminar duplicados de viviendas que puedan tener más de una inmobiliaria (normalmente las más caras)
+df_menores = df_all[df_all['Precio'] <= 3000000]  # Los que NO cumplen la condición
+df_mayores_sin_duplicados = (df_all[df_all['Precio'] > 3000000]
+                           .groupby(['Distrito', 'Precio'])
+                           .first()
+                           .reset_index())
+
+# Combinar de nuevo
+df_all = df_all.infer_objects(copy=False)
+df_all = pd.concat([df_menores, df_mayores_sin_duplicados], ignore_index=True)
+
 # Procesar datos erróneos de tamaño y eliminar las filas incorrectas
 df_all['Tamano'] = df_all['Tamano'].str.replace(".", "", regex=False) # Elimina puntos en string
 df_all["Tamano"] = pd.to_numeric(df_all["Tamano"], errors="coerce") # Pasa a numérico, si no puede, nulo
