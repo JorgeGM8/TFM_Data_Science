@@ -1,6 +1,6 @@
 import pandas as pd
 try:
-    from utils.calculos import calcular_alquiler_venta
+    from utils.calculos import calcular_alquiler_venta, ajustar_precios_simple, ajustar_predicciones_con_limites, ajustar_predicciones_hibrido
 except ModuleNotFoundError:
     print('--> Usa "python -m src.unificacion_gentrificacion_idealista" para importar correctamente las funciones.')
     quit()
@@ -36,10 +36,17 @@ print('--> Predicciones a pasado de alquiler completadas.')
 df_completo = calcular_alquiler_venta(df_completo, 'venta')
 print('--> Predicciones a pasado de venta completadas.')
 
+# Ajustar predicciones
+df_ajustado = ajustar_predicciones_hibrido(df_completo, alpha=0.8, max_desv_venta=0.2, max_desv_alquiler=0.1, seed=42)
+
+# Guardado intermedio para mantener columnas que eliminaremos
+df_ajustado.to_csv('data/processed/viviendas_2011_2024_nodrop.csv', index=False)
+
 # Eliminación de fila de "Precio" (valores obsoletos) y otras columnas que ya no se usarán
-df_completo = df_completo.drop(columns=['Precio', 'Precio_venta', 'Precio_alquiler'])
-print('--> Eliminadas columnas de "Precio", "Precio_venta" y "Precio_alquiler".')
+columnas_eliminar = ['Precio', 'Precio_venta', 'Precio_alquiler', 'Precio_real']
+df_ajustado = df_ajustado.drop(columns=columnas_eliminar)
+print(f'--> Eliminadas columnas: {columnas_eliminar}.')
 
 # --- GUARDADO DE CSV FINAL ---
-df_completo.to_csv('data/final/viviendas_2011_2024.csv', index=False)
+df_ajustado.to_csv('data/final/viviendas_2011_2024.csv', index=False)
 print('--> Datos finales guardados en "data/final/viviendas_2011_2024.csv".')
