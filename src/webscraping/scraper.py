@@ -13,9 +13,6 @@ except Exception as e:
     print(f'Error encontrado al importar librerías de fetch.py: {e}')
 from dotenv import load_dotenv
 
-load_dotenv()
-raw = os.getenv("DISTRICTS", "")
-DISTRICTS = raw.split(",") if raw else []
 
 def list_to_csv(data, csv_filename):
     """
@@ -314,8 +311,12 @@ def get_div_content_local(id, div_class):
     return content
 
 
-def get_url_for_district_page(district, page, venta_o_alquiler):
-   return f"https://www.idealista.com/{venta_o_alquiler}/madrid/{district}/pagina-{page}.htm"
+def get_url_for_district_page(district, page, venta_o_alquiler, capital=True):
+    if capital:
+        return f"https://www.idealista.com/{venta_o_alquiler}/madrid/{district}/pagina-{page}.htm"
+    
+    return f"https://www.idealista.com/{venta_o_alquiler}/{district}/pagina-{page}.htm"
+
 
 
 if __name__ == "__main__":
@@ -326,10 +327,23 @@ if __name__ == "__main__":
             inicio = int(input('Introduce página de inicio: '))
             final = int(input('Introduce página final: '))
             venta_o_alquiler = int(input('¿Venta (1) o alquiler (2)?: '))
+            capital = int(input('¿Los datos son de Madrid (1) o periféricos (2)?: '))
+            if capital == 1:
+                capital = True
+                distrito_o_periferico = "DISTRICTS"
+                print('*Se obtendrán datos de Madrid capital.')
+            else:
+                capital = False
+                distrito_o_periferico = "PERIFERIC"
+                print('*Se obtendrán datos de la periferia de Madrid.')
         except ValueError:
             print('Por favor, introduce un número entero.')
             continue
         break
+
+    load_dotenv()
+    raw = os.getenv(distrito_o_periferico, "")
+    DISTRICTS = raw.split(",") if raw else []
     
     use_stealth = input('¿Usar modo stealth? (s/n): ').lower().startswith('s')
     use_fast = input('¿Usar modo rápido? (s/n): ').lower().startswith('s')
@@ -352,7 +366,7 @@ if __name__ == "__main__":
         district_data = []
         
         for page in range(inicio, final + 1):
-            url = get_url_for_district_page(district, page, venta_o_alquiler)
+            url = get_url_for_district_page(district, page, venta_o_alquiler, capital)
             print(f"\nScraping página {page}: {url}")
             
             content = get_div_content(url, "item-info-container ", use_stealth=use_stealth)
@@ -406,10 +420,16 @@ if __name__ == "__main__":
 
     # Guardar archivo final
     if lista_final:
-        list_to_csv(lista_final, f'data/raw/properties_all_{venta_o_alquiler}_pags_{inicio}-{final}.csv')
+        if capital:
+            list_to_csv(lista_final, f'data/raw/properties_all_{venta_o_alquiler}_pags_{inicio}-{final}.csv')
+        else:
+            list_to_csv(lista_final, f'data/raw/properties_all_perifericos_{venta_o_alquiler}_pags_{inicio}-{final}.csv')
         print(f"\n=== COMPLETADO ===")
         print(f"Total de propiedades extraídas: {len(lista_final)}")
         print(f"Total de errores: {total_errors}")
-        print(f"Guardando csv final en data/raw/properties_all_{venta_o_alquiler}_pags_{inicio}-{final}.csv")
+        if capital:
+            print(f"Guardando csv final en data/raw/properties_all_{venta_o_alquiler}_pags_{inicio}-{final}.csv")
+        else:
+            print(f"Guardando csv final en data/raw/properties_all_perifericos_{venta_o_alquiler}_pags_{inicio}-{final}.csv")
     else:
         print("No se pudo extraer ningún dato")
