@@ -28,15 +28,31 @@ for folder in [RAW, PROCESSED, FINAL]:
 # ==============
 # UNIFICAR ALQUILER Y VENTA Y LIMPIAR DATOS
 # ==============
-files_alq = sorted(RAW.glob("properties_all_alquiler*.csv"))
-files_vta = sorted(RAW.glob("properties_all_venta*.csv"))
+while True:
+    try:
+        capital = int(input("¿Datos de Madrid (1) o periféricos (2)?: "))
+        capital = (capital == 1) # Convertir en True si se eligió 1
+        break
+    except ValueError:
+        print('Introduce un número correcto.')
+
+if capital:
+    files_alq = sorted(RAW.glob("properties_all_alquiler*.csv"))
+    files_vta = sorted(RAW.glob("properties_all_venta*.csv"))
+else:
+    files_alq = sorted(RAW.glob("properties_all_perifericos_alquiler*.csv"))
+    files_vta = sorted(RAW.glob("properties_all_perifericos_venta*.csv"))
 
 df_alq = unify_files(files_alq, "alquiler")
 df_vta = unify_files(files_vta, "venta")
 
 # Guardar intermedios
-df_alq.to_csv(PROCESSED / "alquiler_unificado.csv", index=False)
-df_vta.to_csv(PROCESSED / "venta_unificado.csv", index=False)
+if capital:
+    df_alq.to_csv(PROCESSED / "alquiler_unificado.csv", index=False)
+    df_vta.to_csv(PROCESSED / "venta_unificado.csv", index=False)
+else:
+    df_alq.to_csv(PROCESSED / "alquiler_perifericos_unificado.csv", index=False)
+    df_vta.to_csv(PROCESSED / "venta_perifericos_unificado.csv", index=False)
 
 # Gestionar columnas
 all_cols = sorted(set(df_alq.columns) | set(df_vta.columns))
@@ -59,7 +75,7 @@ df_mayores_sin_duplicados = (df_all[df_all['Precio'] > 3000000]
                            .reset_index())
 
 # Combinar de nuevo
-df_all = df_all.infer_objects(copy=False)
+df_all = df_all.infer_objects()
 df_all = pd.concat([df_menores, df_mayores_sin_duplicados], ignore_index=True)
 
 # Procesar datos erróneos de tamaño y eliminar las filas incorrectas
@@ -68,10 +84,15 @@ df_all["Tamano"] = pd.to_numeric(df_all["Tamano"], errors="coerce") # Pasa a num
 df_all = df_all[df_all["Tamano"].notna()] # Elimina filas no numéricas (errores)
 
 # Guardar dataframe intermedio
-df_all.to_csv(PROCESSED / "inmuebles_unificado_total.csv", index=False)
+if capital:
+    df_all.to_csv(PROCESSED / "inmuebles_unificado_total.csv", index=False)
+    print('--> Datos de alquiler y venta unificados y limpiados.')
+    print(f'--> Datos intermedios guardados en "{PROCESSED}/inmuebles_unificado_total.csv"')
+else:
+    df_all.to_csv(PROCESSED / "inmuebles_perifericos_unificado_total.csv", index=False)
+    print('--> Datos de alquiler y venta unificados y limpiados.')
+    print(f'--> Datos intermedios guardados en "{PROCESSED}/inmuebles_perifericos_unificado_total.csv"')
 
-print('--> Datos de alquiler y venta unificados y limpiados.')
-print(f'--> Datos intermedios guardados en "{PROCESSED}/inmuebles_unificado_total.csv"')
 
 # ==============
 # VARIABLES EXTRA
@@ -114,6 +135,9 @@ print(f'--> Variables sin uso eliminadas {col_innecesarias}.')
 # ==============
 # GUARDADO FINAL
 # ==============
-df_all.to_csv(FINAL / "inmuebles_unificado_total_final.csv", index=False)
-
-print(f'--> Proceso completado. Archivo guardado en: {FINAL}/inmuebles_unificado_total_final.csv')
+if capital:
+    df_all.to_csv(FINAL / "inmuebles_unificado_total_final.csv", index=False)
+    print(f'--> Proceso completado. Archivo guardado en: {FINAL}/inmuebles_unificado_total_final.csv')
+else:
+    df_all.to_csv(FINAL / "inmuebles_perifericos_unificado_total_final.csv", index=False)
+    print(f'--> Proceso completado. Archivo guardado en: {FINAL}/inmuebles_perifericos_unificado_total_final.csv')

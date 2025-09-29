@@ -65,7 +65,7 @@ def ajustar_predicciones_con_limites(df:pd.DataFrame,
                                    max_desv_alquiler:float=0.05,
                                    aplicar_ruido:bool=True,
                                    factor_ruido:float=1.0,
-                                   seed:int=None):
+                                   seed:int=42):
     """
     Ajusta predicciones por grupos (Distrito, Operacion, Ano) con límites de desviación.
     
@@ -159,7 +159,7 @@ def ajustar_predicciones_hibrido(df:pd.DataFrame,
                                 max_desv_venta:float=0.15, 
                                 max_desv_alquiler:float=0.05,
                                 aplicar_ruido:bool=True,
-                                seed:int=None):
+                                seed:int=42):
     """
     Enfoque híbrido: Primero ajusta predicciones por grupos (Distrito, Operacion, Ano) con límites de desviación.
     Luego, ajusta individualmente.
@@ -204,7 +204,7 @@ def ajustar_predicciones_hibrido(df:pd.DataFrame,
     
     # Suavización individual sobre el precio ya ajustado por grupos
     desv_rel = (df_final['Precio_ajustado'] - df_final['Precio_real']) / df_final['Precio_real']
-    desv_rel = desv_rel.fillna(0).infer_objects(copy=False).replace([np.inf, -np.inf], 0)
+    desv_rel = desv_rel.fillna(0).infer_objects().replace([np.inf, -np.inf], 0)
     
     factor = np.exp(-alpha * np.abs(desv_rel))
     ajuste_individual = df_final['Precio_real'] + factor * (df_final['Precio_ajustado'] - df_final['Precio_real'])
@@ -223,6 +223,9 @@ def ajustar_predicciones_hibrido(df:pd.DataFrame,
     
     df_final['Precio_ajustado'] = np.clip(ajuste_individual, limite_inf, limite_sup)
     
+    # Reactivar avisos
+    warnings.filterwarnings('default', category=FutureWarning)
+
     return df_final
 
 
