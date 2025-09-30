@@ -92,6 +92,9 @@ def ajustar_predicciones_con_limites(df:pd.DataFrame,
     if seed is not None:
         np.random.seed(seed)
     
+    # Silenciar avisos ya revisados
+    warnings.filterwarnings('ignore', category=FutureWarning)
+
     # Verificar columnas necesarias
     required_cols = ['Distrito', 'Operacion', 'Ano', 'Precio_venta', 'Precio_alquiler', 'Precio_predicho']
     missing_cols = [col for col in required_cols if col not in df.columns]
@@ -151,6 +154,9 @@ def ajustar_predicciones_con_limites(df:pd.DataFrame,
     df_ajustado = pd.concat(ajustados)
     df_ajustado = df_ajustado.loc[orden_original]
     
+    # Reactivar avisos
+    warnings.filterwarnings('default', category=FutureWarning)
+
     return df_ajustado
 
 
@@ -159,6 +165,7 @@ def ajustar_predicciones_hibrido(df:pd.DataFrame,
                                 max_desv_venta:float=0.15, 
                                 max_desv_alquiler:float=0.05,
                                 aplicar_ruido:bool=True,
+                                factor_ruido:float=1,
                                 seed:int=42):
     """
     Enfoque híbrido: Primero ajusta predicciones por grupos (Distrito, Operacion, Ano) con límites de desviación.
@@ -168,6 +175,8 @@ def ajustar_predicciones_hibrido(df:pd.DataFrame,
     -----------
     df : DataFrame de Pandas
         DataFrame con las predicciones originales.
+    alpha : float
+        Factor de suavizado. A mayor alpha, menor ajuste.
     max_desv_venta : float
         Máxima desviación permitida para ventas (ej: 0.15 = 15%).
     max_desv_alquiler : float  
@@ -183,15 +192,17 @@ def ajustar_predicciones_hibrido(df:pd.DataFrame,
     --------
     DataFrame con columna "Precio_ajustado".
     """
-    # Silenciar avisos ya revisados
-    warnings.filterwarnings('ignore', category=FutureWarning)
     
     # Paso 1: Ajuste por grupos
     df_grupos = ajustar_predicciones_con_limites(
         df, max_desv_venta, max_desv_alquiler, 
-        aplicar_ruido=aplicar_ruido, seed=seed
+        aplicar_ruido=aplicar_ruido, factor_ruido=factor_ruido,
+        seed=seed
     )
-    
+
+    # Silenciar avisos ya revisados
+    warnings.filterwarnings('ignore', category=FutureWarning)
+
     # Paso 2: Ajuste individual suave sobre el resultado
     df_final = df_grupos.copy()
     
