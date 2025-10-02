@@ -10,9 +10,9 @@ def calcular_alquiler_venta(df: pd.DataFrame,
                             distrito: str = 'Distrito',
                             nueva_col: str = 'Precio_predicho') -> pd.DataFrame:
     """
-    Función que calcula la predicción del precio que tendría una vivienda cada año, basándose en el precio de 2025, su tamaño y su distrito.
+    Función que calcula la predicción del precio que tendría una vivienda cada año, basándose en el precio de 2025, su distrito y el año para predecir.
 
-    La regla de 3 se basa en: si en 2025 esta vivienda vale X y la media de precio es Y, ¿cuánto valdría la vivienda en cada año si la media era Z?
+    La regla de 3 se basa en: si en 2025 esta vivienda vale X y la media de precio por m2 es Y, ¿cuánto valdría la vivienda en cada año si la media por m2 era Z?
 
     Parameters
     ----------
@@ -40,7 +40,8 @@ def calcular_alquiler_venta(df: pd.DataFrame,
     """
     
     # Media de precios de alquiler o venta por distrito en 2025
-    medias_2025 = df.loc[df[operacion] == tipo].groupby(distrito)[precio].mean()
+    media_tamano_2025 = df.loc[df[operacion] == tipo].groupby(distrito)[tamano].mean()
+    medias_2025 = df.loc[df[operacion] == tipo].groupby(distrito)[precio].mean() / media_tamano_2025
     
     # Inicializar columna de precio predicho (si no existe)
     if nueva_col not in df.columns:
@@ -52,20 +53,48 @@ def calcular_alquiler_venta(df: pd.DataFrame,
     
     # Cálculo fila a fila para sacar la predicción usando la regla de 3
     df.loc[mask, nueva_col] = (
-        df.loc[mask, precio] *
-        (df.loc[mask, p_medio_antiguo] * df.loc[mask, tamano]) /
+        (df.loc[mask, p_medio_antiguo] * df.loc[mask, precio]) /
         df.loc[mask, distrito].map(medias_2025)
     )
     
     return df
 
+def aplicar_ruido_precios(df: pd.DataFrame,
+                          factor_ruido: float = 0.05,
+                          seed: int = 42) -> pd.DataFrame:
+    """
+    Aplica ruido gaussiano a una columna de precios.
+
+    Parameters
+    ----------
+    df : pd.DataFrame
+        DataFrame con los datos.
+    factor_ruido : float
+        Proporción del precio usada como desviación estándar (ej: 0.05 = 5%).
+    seed : int
+        Semilla para reproducibilidad.
+
+    Returns
+    -------
+    pd.DataFrame
+        DataFrame con nueva columna Precio_ajustado.
+    """
+    rng = np.random.default_rng(seed)
+    sigma = df['Precio_predicho'].abs() * factor_ruido
+    ruido = rng.normal(0, sigma)
+    df = df.copy()
+    df['Precio_ajustado'] = df['Precio_predicho'] + ruido
+
+    return df
 
 def ajustar_predicciones_con_limites(df:pd.DataFrame, 
-                                   max_desv_venta:float=0.15, 
-                                   max_desv_alquiler:float=0.05,
-                                   aplicar_ruido:bool=True,
-                                   factor_ruido:float=1.0,
-                                   seed:int=42):
+                                    max_desv_venta:float=0.15, 
+                                    max_desv_alquiler:float=0.05,
+                                    max_precio_venta:int=15000000,
+                                    max_precio_alquiler:int=35000,
+                                    aplicar_ruido:bool=True,
+                                    factor_ruido:float=1.0,
+                                    seed:int=42):
     """
     Ajusta predicciones por grupos (Distrito, Operacion, Ano) con límites de desviación.
     
@@ -111,9 +140,11 @@ def ajustar_predicciones_con_limites(df:pd.DataFrame,
         if operacion == "venta":
             real_medio = grupo["Precio_venta"].mean()
             max_desviacion = max_desv_venta
+            max_precio = max_precio_venta
         else:
             real_medio = grupo["Precio_alquiler"].mean()
             max_desviacion = max_desv_alquiler
+            max_precio = max_precio_alquiler
         
         pred_medio = grupo["Precio_predicho"].mean()
         sesgo = real_medio - pred_medio
@@ -148,6 +179,13 @@ def ajustar_predicciones_con_limites(df:pd.DataFrame,
             limite_sup
         )
         
+        # Aplicar límite para no pasarse de precios reales, en base a datos de Idealista
+        grupo["Precio_ajustado"] = np.clip(
+            grupo["Precio_ajustado"],
+            0,
+            max_precio
+        )
+
         ajustados.append(grupo)
     
     # Concatenar y reordenar igual que el df original
@@ -164,6 +202,8 @@ def ajustar_predicciones_hibrido(df:pd.DataFrame,
                                 alpha:float=0.5,
                                 max_desv_venta:float=0.15, 
                                 max_desv_alquiler:float=0.05,
+                                max_precio_venta:int=15000000,
+                                max_precio_alquiler:int=35000,
                                 aplicar_ruido:bool=True,
                                 factor_ruido:float=1,
                                 seed:int=42):
@@ -195,9 +235,9 @@ def ajustar_predicciones_hibrido(df:pd.DataFrame,
     
     # Paso 1: Ajuste por grupos
     df_grupos = ajustar_predicciones_con_limites(
-        df, max_desv_venta, max_desv_alquiler, 
-        aplicar_ruido=aplicar_ruido, factor_ruido=factor_ruido,
-        seed=seed
+        df, max_desv_venta, max_desv_alquiler, max_precio_venta,
+        max_precio_alquiler, aplicar_ruido=aplicar_ruido,
+        factor_ruido=factor_ruido, seed=seed
     )
 
     # Silenciar avisos ya revisados
@@ -231,8 +271,15 @@ def ajustar_predicciones_hibrido(df:pd.DataFrame,
         df_final['Precio_predicho'] * (1 + max_desv_venta),
         df_final['Precio_predicho'] * (1 + max_desv_alquiler)
     )
+
+    max_precio = np.where(
+        df_final['Operacion'] == 'venta',
+        max_precio_venta,
+        max_precio_alquiler
+    )
     
     df_final['Precio_ajustado'] = np.clip(ajuste_individual, limite_inf, limite_sup)
+    df_final['Precio_ajustado'] = np.clip(df_final['Precio_ajustado'], 0, max_precio)
     
     # Reactivar avisos
     warnings.filterwarnings('default', category=FutureWarning)
