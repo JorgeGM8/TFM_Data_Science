@@ -13,6 +13,7 @@ dependencies = [
     "h11==0.14.0",
     "hdbscan>=0.8.40",
     "idna==3.10",
+    "imblearn>=0.0",
     "ipykernel>=6.30.1",
     "ipywidgets>=8.1.7",
     "matplotlib>=3.10.5",
