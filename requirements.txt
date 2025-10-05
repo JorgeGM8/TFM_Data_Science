@@ -67,6 +67,10 @@ idna==3.10
     #   tfm (pyproject.toml)
     #   requests
     #   trio
+imbalanced-learn==0.14.0
+    # via imblearn
+imblearn==0.0
+    # via tfm (pyproject.toml)
 ipykernel==6.30.1
     # via tfm (pyproject.toml)
 ipython==9.4.0
@@ -88,6 +92,7 @@ jinja2==3.1.6
 joblib==1.5.1
     # via
     #   hdbscan
+    #   imbalanced-learn
     #   pynndescent
     #   scikit-learn
 jsonschema==4.25.1
@@ -135,6 +140,7 @@ numpy==2.3.2
     # via
     #   contourpy
     #   hdbscan
+    #   imbalanced-learn
     #   matplotlib
     #   numba
     #   pandas
@@ -282,12 +288,14 @@ rpds-py==0.27.1
 scikit-learn==1.7.1
     # via
     #   hdbscan
+    #   imbalanced-learn
     #   pynndescent
     #   skrub
     #   umap-learn
 scipy==1.16.1
     # via
     #   hdbscan
+    #   imbalanced-learn
     #   pynndescent
     #   scikit-learn
     #   skrub
@@ -333,7 +341,9 @@ sympy==1.14.0
 tenacity==9.1.2
     # via streamlit
 threadpoolctl==3.6.0
-    # via scikit-learn
+    # via
+    #   imbalanced-learn
+    #   scikit-learn
 toml==0.10.2
     # via streamlit
 torch==2.8.0
