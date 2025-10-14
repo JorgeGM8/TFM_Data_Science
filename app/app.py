@@ -5,7 +5,6 @@
 from __future__ import annotations
 from typing import Dict, Any, Tuple
 
-import os
 from pathlib import Path
 
 import pandas as pd
@@ -23,9 +22,8 @@ st.caption("Explora datos inmobiliarios, visualiza KPIs, mapas y gráficos compa
 
 # ---------------------- CARGA DE DATOS ----------------------------
 
-# ⚠️ Asegúrate de que esta ruta apunte a TU CSV con IAV:
-DEFAULT_PATH = r"C:\Users\andre\OneDrive\Documentos\IMF\TFM\TFM_app\viviendas_2011_2024_IAV.csv"
-GEO_PATH = "madrid_distritos_geo.json"
+DEFAULT_PATH = "data/final/viviendas_2011_2024_IAV.csv"
+GEO_PATH = "app/madrid_distritos_geo.json"
 
 @st.cache_data(show_spinner=True)
 def load_csv(path: str) -> pd.DataFrame:
@@ -62,9 +60,12 @@ st.success(f"✓ Datos cargados: {df.shape[0]:,} registros")
 # ---------------------- UTILIDADES -------------------------------------------
 
 DISTRITO_MAPPING = {
-    'FUENCARRALELPARDO': 'FUENCARRAL EL PARDO', 'MONCLOAARAVACA': 'MONCLOA ARAVACA',
-    'PUENTEDEVALLECAS': 'PUENTE DE VALLECAS', 'CIUDADLINEAL': 'CIUDAD LINEAL',
-    'VILLADEVALLECAS': 'VILLA DE VALLECAS', 'SANBLASCANILLEJAS': 'SAN BLAS CANILLEJAS',
+    'FUENCARRALELPARDO': 'FUENCARRAL EL PARDO',
+    'MONCLOAARAVACA': 'MONCLOA ARAVACA',
+    'PUENTEDEVALLECAS': 'PUENTE DE VALLECAS',
+    'CIUDADLINEAL': 'CIUDAD LINEAL',
+    'VILLADEVALLECAS': 'VILLA DE VALLECAS',
+    'SANBLASCANILLEJAS': 'SAN BLAS CANILLEJAS',
 }
 def _norm(x: str) -> str:
     if x is None:
@@ -187,13 +188,45 @@ st.divider()
 
 # ===================== Diccionario de datos =====================
 with st.expander("📚 Diccionario de datos"):
-    st.markdown("""
-- **IAV_compra**: Renta media del hogar / (Precio de venta €/m² × 40 m²). **≥ 1 accesible**, **< 1 no accesible**.
-- **Esfuerzo_compra**: Precio de venta / Renta bruta del hogar. **Años de renta bruta** para comprar (cuanto menor, mejor).
-- **IAV_alquiler**: Renta media del hogar / (Precio de alquiler €/m² × 40 m² × 12). **≥ 1 cubre alquiler**, **< 1 no cubre**.
-- **Esfuerzo_alquiler (%)**: Precio de alquiler €/m² × 40 m² × 12 / Renta media del hogar) × 100. **≤30% sostenible**, **30–35% tensión**, **>35% sobreesfuerzo**.
-- **Precio_ajustado**: precio corregido por distrito (método híbrido: **α** + límites **±15% venta / ±5% alquiler** + ruido controlado) para alinear la proyección con el mercado.
-""")
+    st.markdown("### Indicadores de accesibilidad y esfuerzo")
+
+    st.markdown("**IAV compra**: Índice de accesibilidad a la vivienda en compra.")
+    st.latex(r"""
+    IAV_{compra} = 
+    \frac{\text{Renta media del hogar}}
+    {\text{Precio de venta (€/m}^{2}) \times 40}
+    """)
+    st.markdown("≥ 1 → accesible; < 1 → no accesible")
+
+    st.markdown("**Esfuerzo compra**: Años de renta bruta necesarios para comprar.")
+    st.latex(r"""
+    Esfuerzo_{compra} = 
+    \frac{\text{Precio de venta}}{\text{Renta bruta del hogar}}
+    """)
+    st.markdown("≤ 5 → poco esfuerzo; > 5 → mucho esfuerzo")
+
+    st.markdown("**IAV alquiler**: Capacidad de cubrir el alquiler con la renta media del hogar.")
+    st.latex(r"""
+    IAV_{alquiler} = 
+    \frac{\text{Renta media del hogar}}
+    {\text{Precio de alquiler (€/m}^{2}) \times 40 \times 12}
+    """)
+    st.markdown("≥ 1 → cubre alquiler; < 1 → no cubre")
+
+    st.markdown("**Esfuerzo alquiler (%)**: Porcentaje de la renta destinado al alquiler.")
+    st.latex(r"""
+    Esfuerzo_{alquiler}(\%) = 
+    \frac{\text{Precio de alquiler (€/m}^{2}) \times 40 \times 12}
+    {\text{Renta media del hogar}} \times 100
+    """)
+    st.markdown("≤ 30% → sostenible; 30–35% → tensión; > 35% → sobreesfuerzo")
+
+    st.markdown("**Precio ajustado**: Precio corregido por distrito (método híbrido).")
+    st.latex(r"""
+    Precio_{ajustado} = 
+    \alpha \pm (\text{15\% venta / 5\% alquiler}) + \text{ruido controlado}
+    """)
+    st.markdown("Alinea la proyección con el mercado.")
 
 # ---------------------- MAPA INTERACTIVO ----------------------
 st.subheader("🗺️ Mapa por distrito (elige la variable)")
@@ -330,7 +363,7 @@ else:
             feat["properties"]["IAV_compra_mediana"]        = data.get("IAV_compra_mediana")
             feat["properties"]["IAV_alquiler_mediana"]      = data.get("IAV_alquiler_mediana")
             feat["properties"]["Esfuerzo_alquiler_mediana"] = data.get("Esfuerzo_alquiler_mediana")
-            feat["properties"]["Esfuerzo_compra_mediana"] = data.get("Esfuerzo_compra_mediana")
+            feat["properties"]["Esfuerzo_compra_mediana"]   = data.get("Esfuerzo_compra_mediana")
 
             v = data.get(sel_col)
             if v is not None:
@@ -343,7 +376,7 @@ else:
             feat["properties"]["_iavc_fmt"]           = fmt_n(feat["properties"]["IAV_compra_mediana"])
             feat["properties"]["_iava_fmt"]           = fmt_n(feat["properties"]["IAV_alquiler_mediana"])
             feat["properties"]["_esf_fmt"]            = fmt_n(feat["properties"]["Esfuerzo_alquiler_mediana"], "%")
-            feat["properties"]["_esf_c_fmt"] = fmt_n(feat["properties"]["Esfuerzo_compra_mediana"])
+            feat["properties"]["_esf_c_fmt"]          = fmt_n(feat["properties"]["Esfuerzo_compra_mediana"])
 
         if not valores_validos:
             st.warning("⚠️ No hay valores numéricos para colorear el mapa con los filtros actuales.")
@@ -412,6 +445,7 @@ else:
                 <p style="margin: 5px 0;"><b>IAV compra (mediana):</b> {_iavc_fmt}</p>
                 <p style="margin: 5px 0;"><b>IAV alquiler (mediana):</b> {_iava_fmt}</p>
                 <p style="margin: 5px 0;"><b>Esfuerzo alquiler (mediana):</b> {_esf_fmt}</p>
+                <p style="margin: 5px 0;"><b>Esfuerzo compra (mediana):</b> {_esf_c_fmt}</p>
             </div>
             """,
             "style": {"backgroundColor": "white", "color": "black", "fontSize": "12px",
@@ -477,6 +511,12 @@ with tab3:
 
 # ===================== Pestaña: Evolución temporal =====================
 ts_tab, = st.tabs(["📈 Evolución temporal"])
+
+# Función para cambiar nombre visualizado de métricas para aplicarlo más adelante
+metricas = ["Precio_ajustado", "IAV_alquiler","Esfuerzo_alquiler", "IAV_compra", "Esfuerzo_compra"]
+def nombres_metricas(met):   
+    return met.replace("_", " ")
+
 with ts_tab:
     if "Ano" not in filtered_df.columns:
         st.info("No hay columna 'Ano' para series temporales.")
@@ -484,7 +524,8 @@ with ts_tab:
         # Métrica a visualizar
         metrica = st.radio(
             "Métrica",
-            ["Precio_ajustado", "IAV_alquiler","Esfuerzo_alquiler", "IAV_compra", "Esfuerzo_compra"],
+            metricas,
+            format_func=nombres_metricas,
             horizontal=True,
             key="ts_metric"
         )
@@ -532,45 +573,42 @@ with ts_tab:
 
 
 # ===================== Pestaña: Visualización 2D con UMAP =====================
-from pathlib import Path
 
 umap_tab, = st.tabs(["VISUALIZACIÓN"])
 with umap_tab:
-    st.caption("Proyección bidimensional de tus observaciones mediante UMAP.")
+    st.caption("Proyección bidimensional de las observaciones mediante UMAP y distribución de los clusters por distrito.")
 
     # Pestañas internas: UMAP y Evolución de clusters
-    tab_umap, tab_evo = st.tabs(["📌 UMAP 2D", "⏱️ Evolución de los clusters"])
+    tab_umap, tab_evo = st.tabs(["📌 UMAP 2D", "✳️ Distribución de los clusters"])
 
     # ---- Tab 1: UMAP 2D ----
     with tab_umap:
-        umap_path = Path(__file__).parent / "umap.jpg"
-        if umap_path.exists():
+        umap_path = "reports/figures/umap.png"
+        if umap_path:
             st.image(str(umap_path), caption="Visualización 2D con UMAP", use_container_width=True)
             with open(umap_path, "rb") as f:
                 st.download_button("Descargar imagen (PNG)", f, file_name="umap.png")
         else:
-            st.warning("No encuentro **umap.jpg** en la carpeta de la app. Ponlo junto a `app.py`.")
+            st.warning("No se encuentra **umap.png**. Colocar en reports/figures.")
 
     # ---- Tab 2: Evolución temporal de los clusters ----
     with tab_evo:
-        evo_path = Path(__file__).parent / "EVOLUCION TEMPORAL DE LOS CLUSTERS.jpg"
-        if evo_path.exists():
-            st.image(str(evo_path), caption="Evolución temporal de los clusters", use_container_width=True)
+        evo_path = "reports/figures/porcentaje_viviendas_distrito_cluster.png"
+        if evo_path:
+            st.image(str(evo_path), caption="Distribución de los clusters", use_container_width=True)
             with open(evo_path, "rb") as f:
                 st.download_button(
-                    "Descargar imagen (JPG)",
+                    "Descargar imagen (PNG)",
                     f,
-                    file_name="EVOLUCION_TEMPORAL_DE_LOS_CLUSTERS.jpg"
+                    file_name="porcentaje_viviendas_distrito_cluster.png"
                 )
         else:
-            st.warning("No encuentro **EVOLUCION TEMPORAL DE LOS CLUSTERS.jpg** en la carpeta de la app.")
+            st.warning("No se encuentra **porcentaje_viviendas_distrito_cluster.png**. Colocar en reports/figures.")
 
 
 
 # ===================== Tabla de clusters (UMAP) =====================
 st.markdown("### Tabla de clusters (interpretación UMAP)")
-
-import pandas as pd
 
 clusters_data = [
     {
@@ -625,10 +663,8 @@ st.download_button(
 # ===================== Mapa: Tasa de gentrificación (Cluster_KMeans) =====================
 st.subheader("🗺️ Tasa de gentrificación por distrito (%) — KMeans")
 
-from pathlib import Path
-
 # 1) Cargar cluster.csv 
-CLUSTERS_PATH = Path(__file__).parent / "cluster.csv"
+CLUSTERS_PATH = "app/cluster.csv"
 
 @st.cache_data(show_spinner=True)
 def load_clusters_csv(path: Path) -> pd.DataFrame:
