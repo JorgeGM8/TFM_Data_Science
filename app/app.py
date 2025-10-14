@@ -663,8 +663,8 @@ st.download_button(
 # ===================== Mapa: Tasa de gentrificación (Cluster_KMeans) =====================
 st.subheader("🗺️ Tasa de gentrificación por distrito (%) — KMeans")
 
-# 1) Cargar cluster.csv 
-CLUSTERS_PATH = "app/cluster.csv"
+# 1) Cargar clusters.csv 
+CLUSTERS_PATH = "data/final/clusters.csv"
 
 @st.cache_data(show_spinner=True)
 def load_clusters_csv(path: Path) -> pd.DataFrame:
@@ -673,12 +673,12 @@ def load_clusters_csv(path: Path) -> pd.DataFrame:
 try:
     dclu = load_clusters_csv(CLUSTERS_PATH)
 except Exception as e:
-    st.error(f"No pude leer 'cluster.csv': {type(e).__name__}: {e}")
+    st.error(f"No pude leer 'clusters.csv': {type(e).__name__}: {e}")
     st.stop()
 
 # 2) Checks mínimos
 if "Distrito" not in dclu.columns or "Cluster_KMeans" not in dclu.columns:
-    st.error("El archivo 'cluster.csv' debe incluir las columnas 'Distrito' y 'Cluster_KMeans'.")
+    st.error("El archivo 'clusters.csv' debe incluir las columnas 'Distrito' y 'Cluster_KMeans'.")
     st.stop()
 
 # Normalizar cabeceras y tipos
@@ -702,7 +702,7 @@ if "Ano" in dclu.columns and "Ano" in filtered_df.columns:
         dclu = dclu[dclu["Ano"].isin(sel_years)]
 
 if dclu.empty:
-    st.warning("No hay registros en 'cluster.csv' tras aplicar los filtros actuales.")
+    st.warning("No hay registros en 'clusters.csv' tras aplicar los filtros actuales.")
     st.stop()
 
 # 4) Definir clusters 'gentrificadores' por defecto (etiq. 'C#' o números)
@@ -756,7 +756,7 @@ try:
         f["properties"]["_fill_color"] = col(f["properties"].get("tasa_gent", np.nan))
 
     # 8) Render
-    st.caption(f"Fuente: cluster.csv · Algoritmo: Cluster_KMeans · Clusters gentrificadores: {', '.join(sorted(GENTRIFYING))}")
+    st.caption(f"Fuente: clusters.csv · Algoritmo: KMeans · Clusters gentrificadores: {', '.join(sorted(GENTRIFYING))}")
     layer = pdk.Layer(
         "GeoJsonLayer",
         data=geojson_g,
