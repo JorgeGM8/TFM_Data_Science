@@ -13,6 +13,9 @@ import streamlit as st
 import pydeck as pdk
 import json
 import unicodedata
+import joblib
+import bz2
+import pickle
 
 # ---------------------- CONFIGURACIÓN BÁSICA ----------------------
 
@@ -384,13 +387,31 @@ else:
 
         # ---------- Cuartiles y colores ----------
         q1, q2, q3 = np.percentile(valores_validos, [25, 50, 75])
-        color_scale = {
-            'q1': [137, 194, 217, 150],
-            'q2': [ 70, 143, 175, 160],
-            'q3': [ 39,  76, 119, 170],
-            'q4': [ 13,  27,  42, 180],
-            'na': [255, 255, 255, 110],
-        }
+        if sel_col in ["IAV_compra_mediana", "IAV_alquiler_mediana"]:
+            color_scale = {
+                'q1': [215, 25, 28, 180], # rojo
+                'q2': [253, 174, 97, 180], # naranja
+                'q3': [255, 255, 191, 180], # amarillo verdoso
+                'q4': [166, 217, 106, 180], # verde
+                'na': [255, 255, 255, 110],
+            }
+        elif sel_col in ["Esfuerzo_compra_mediana", "Esfuerzo_alquiler_mediana"]:
+            color_scale = {
+                'q1': [166, 217, 106, 180], # verde
+                'q2': [255, 255, 191, 180], # amarillo verdoso
+                'q3': [253, 174, 97, 180], # naranja
+                'q4': [215, 25, 28, 180], # rojo
+                'na': [255, 255, 255, 110], # gris
+            }
+        else: # Colores azules por defecto
+            color_scale = {
+                'q1': [137, 194, 217, 150],
+                'q2': [ 70, 143, 175, 160],
+                'q3': [ 39,  76, 119, 170],
+                'q4': [ 13,  27,  42, 180],
+                'na': [255, 255, 255, 110],
+            }
+
         def color_for(v):
             if v is None or (isinstance(v, float) and np.isnan(v)): return color_scale['na']
             if v <= q1: return color_scale['q1']
@@ -403,17 +424,27 @@ else:
             feat["properties"]["_fill_color"] = color_for(v)
 
         st.caption(f"Coloreando por: **{sel_label}**")
+        
+        def rgba_to_hex(rgba): # Convertir RGB a HEX
+            r, g, b = rgba[:3]
+            return f'#{r:02X}{g:02X}{b:02X}'
+
+        hex_q1 = rgba_to_hex(color_scale['q1'])
+        hex_q2 = rgba_to_hex(color_scale['q2'])
+        hex_q3 = rgba_to_hex(color_scale['q3'])
+        hex_q4 = rgba_to_hex(color_scale['q4'])
+
         # Leyenda compacta
         st.markdown(
             f"""
             <div style="line-height:1.6; font-size:0.9rem">
-            <span style="display:inline-block;width:12px;height:12px;background:#89C2D9;border:1px solid #bbb;border-radius:2px;margin-right:6px;"></span>
+            <span style="display:inline-block;width:12px;height:12px;background:{hex_q1};border:1px solid #bbb;border-radius:2px;margin-right:6px;"></span>
             ≤ {q1:,.2f} &nbsp;&nbsp;
-            <span style="display:inline-block;width:12px;height:12px;background:#468FAF;border:1px solid #bbb;border-radius:2px;margin:0 6px;"></span>
+            <span style="display:inline-block;width:12px;height:12px;background:{hex_q2};border:1px solid #bbb;border-radius:2px;margin:0 6px;"></span>
             {q1:,.2f} – {q2:,.2f} &nbsp;&nbsp;
-            <span style="display:inline-block;width:12px;height:12px;background:#274C77;border:1px solid #bbb;border-radius:2px;margin:0 6px;"></span>
+            <span style="display:inline-block;width:12px;height:12px;background:{hex_q3};border:1px solid #bbb;border-radius:2px;margin:0 6px;"></span>
             {q2:,.2f} – {q3:,.2f} &nbsp;&nbsp;
-            <span style="display:inline-block;width:12px;height:12px;background:#0D1B2A;border:1px solid #bbb;border-radius:2px;margin-left:6px;"></span>
+            <span style="display:inline-block;width:12px;height:12px;background:{hex_q4};border:1px solid #bbb;border-radius:2px;margin-left:6px;"></span>
             ≥ {q3:,.2f}
             </div>
             """,
@@ -433,7 +464,7 @@ else:
             auto_highlight=True,
             highlight_color=[255, 255, 0, 128],
         )
-        view_state = pdk.ViewState(latitude=40.4168, longitude=-3.7038, zoom=10.8, bearing=0, pitch=0)
+        view_state = pdk.ViewState(latitude=40.4168, longitude=-3.7038, zoom=9.5, bearing=0, pitch=0)
         tooltip = {
             "html": """
             <div style="font-family: Arial; padding: 10px;">
@@ -451,12 +482,13 @@ else:
             "style": {"backgroundColor": "white", "color": "black", "fontSize": "12px",
                       "borderRadius": "5px", "boxShadow": "0 2px 4px rgba(0,0,0,0.2)"}
         }
+        
         st.pydeck_chart(
             pdk.Deck(layers=[layer], initial_view_state=view_state,
                      tooltip=tooltip, map_style="mapbox://styles/mapbox/light-v10"),
             use_container_width=True, height=600
         )
-
+        
     except FileNotFoundError:
         st.error(f"❌ No se encontró el archivo GeoJSON '{GEO_PATH}'.")
     except json.JSONDecodeError as e:
@@ -464,8 +496,6 @@ else:
     except Exception as e:
         st.error(f"❌ Error inesperado: {type(e).__name__}: {e}")
         st.exception(e)
-
-
 
 
 # ---------------------- TABLA & DESCARGAS ----------------------
@@ -811,3 +841,126 @@ except FileNotFoundError:
 except Exception as e:
     st.error(f"Error al construir el mapa: {type(e).__name__}: {e}")
     st.exception(e)
+
+# # ===================== Pestaña: Predicción de precio =====================
+# st.divider()
+# st.subheader("🔮 Predicción de precios de vivienda")
+
+
+# MODEL_PATH_RF = "models/rf_final.pkl.bz2"
+# MODEL_PATH_LR = "models/lr.pkl"
+
+# @st.cache_resource(show_spinner=True)
+# def load_models():
+#     with bz2.open(MODEL_PATH_RF, "rb") as f:
+#         model_rf = pickle.load(f)
+#     with open(MODEL_PATH_LR, "rb") as f:
+#         model_lr = pickle.load(f)
+#     return model_rf, model_lr
+
+# # --- Cargar modelo ---
+# try:
+#     model_rf, model_lr = load_models()
+#     st.success("Modelos cargados correctamente ✅")
+# except FileNotFoundError:
+#     st.error(f"No se encontró el modelo en {MODEL_PATH_RF} o {MODEL_PATH_LR}.")
+#     st.stop()
+# except Exception as e:
+#     st.error(f"Error al cargar los modelos: {type(e).__name__}: {e}")
+#     st.stop()
+
+# # --- Interfaz de inputs ---
+# st.markdown("### Introduce las características de la vivienda:")
+
+# tipos_vivienda = ["Ático", "Chalet", "Dúplex", "Estudio",
+#                   "Tríplex", "Apartamento", "Mansión", "Loft"]
+
+# distritos = [
+#     "CENTRO",
+#     "CHAMBERI",
+#     "ARGANZUELA",
+#     "VICALVARO",
+#     "MORATALAZ",
+#     "BARAJAS",
+#     "PUENTEDEVALLECAS",
+#     "LATINA",
+#     "VILLAVERDE",
+#     "TETUAN",
+#     "USERA",
+#     "SALAMANCA",
+#     "VILLADEVALLECAS",
+#     "CARABANCHEL",
+#     "FUENCARRALELPARDO",
+#     "CIUDADLINEAL",
+#     "MONCLOAARAVACA",
+#     "RETIRO",
+#     "CHAMARTIN",
+#     "HORTALEZA",
+#     "SANBLASCANILLEJAS"
+# ]
+
+# col1, col2, col3 = st.columns(3)
+# with col1:
+#     tipo_vivienda = st.selectbox("Tipo de vivienda", tipos_vivienda)
+#     planta = st.number_input("Planta", min_value=-1, max_value=20, value=2, step=1)
+#     tamano = st.slider("Tamaño (m²)", 30, 300, 80, step=5)
+#     habitaciones = st.number_input("Habitaciones", min_value=1, max_value=10, value=2, step=1)
+#     banos = st.number_input("Baños", min_value=1, max_value=4, value=1, step=1)
+# with col2:
+#     ascensor = st.checkbox("Ascensor", value=True)
+#     terraza = st.checkbox("Terraza", value=True)
+#     piscina = st.checkbox("Piscina", value=True)
+#     exterior = st.checkbox("Exterior", value=True)
+#     trastero = st.checkbox("Trastero", value=True)
+#     garaje = st.checkbox("Garaje", value=True)
+# with col3:
+#     distrito = st.selectbox("Distrito", distritos)
+#     ano = st.slider("Año", 2025, 2030, 2026, step=1)
+
+# # ================= Fase 1: Predicción socioeconómica =================
+# socio_input = pd.DataFrame([{
+#     "Distrito": distrito,
+#     "Ano": ano
+# }])
+
+# socio_pred = model_lr.predict(socio_input)
+# socio_cols = model_lr.feature_names_out_ if hasattr(model_lr, "feature_names_out_") else [f"var_{i}" for i in range(len(socio_pred[0]))]
+# socio_df = pd.DataFrame(socio_pred, columns=socio_cols)
+
+# st.write("### 🧩 Variables socioeconómicas predichas")
+# st.dataframe(socio_df, width='stretch')
+
+# # --- Construir entrada para predicción ---
+# input_dict = {
+#     "Tipo_vivienda": tipo_vivienda,
+#     "Planta": planta,
+#     "Tamano": tamano,
+#     "Habitaciones": habitaciones,
+#     "Banos": banos,
+#     "Ascensor": ascensor,
+#     "Terraza": terraza,
+#     "Piscina": piscina,
+#     "Exterior": exterior,
+#     "Trastero": trastero,
+#     "Garaje": garaje,
+#     "Ano": ano,
+#     "Distrito": distrito,
+#     **socio_df.iloc[0].to_dict() # incorpora variables socioeconómicas predichas
+# }
+
+# st.write("📋 **Características seleccionadas:**")
+# st.json(dict(list(input_dict.items())[:13]))
+
+# # --- Botón de predicción ---
+# if st.button("🔮 Predecir precio"):
+#     try:
+#         X_input = pd.DataFrame([input_dict])
+#         pred = model_rf.predict(X_input)
+#         precio_pred = float(pred[0])
+
+#         st.success(f"💰 Precio estimado: **{precio_pred:,.0f} €**")
+#         st.caption("Predicción generada con el modelo entrenado de precios ajustados.")
+
+#     except Exception as e:
+#         st.error(f"Error durante la predicción: {type(e).__name__}: {e}")
+
