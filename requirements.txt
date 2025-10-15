@@ -130,6 +130,7 @@ matplotlib==3.10.5
     #   tfm (pyproject.toml)
     #   seaborn
     #   skrub
+    #   wordcloud
 matplotlib-inline==0.1.7
     # via
     #   ipykernel
@@ -164,6 +165,7 @@ numpy==2.3.2
     #   statsmodels
     #   streamlit
     #   umap-learn
+    #   wordcloud
 nvidia-cublas-cu12==12.8.4.1
     # via
     #   nvidia-cudnn-cu12
@@ -235,6 +237,7 @@ pillow==11.3.0
     # via
     #   matplotlib
     #   streamlit
+    #   wordcloud
 platformdirs==4.3.8
     # via jupyter-core
 prompt-toolkit==3.0.51
@@ -301,8 +304,9 @@ rpds-py==0.27.1
     # via
     #   jsonschema
     #   referencing
-scikit-learn==1.7.1
+scikit-learn==1.4.2
     # via
+    #   tfm (pyproject.toml)
     #   hdbscan
     #   imbalanced-learn
     #   pynndescent
@@ -409,7 +413,7 @@ typing-extensions==4.12.2
     #   torch
 tzdata==2025.2
     # via pandas
-umap-learn==0.5.9.post2
+umap-learn==0.5.7
     # via tfm (pyproject.toml)
 undetected-chromedriver==3.5.5
     # via tfm (pyproject.toml)
@@ -434,6 +438,8 @@ websockets==15.0.1
     #   undetected-chromedriver
 widgetsnbextension==4.0.14
     # via ipywidgets
+wordcloud==1.9.4
+    # via tfm (pyproject.toml)
 wsproto==1.2.0
     # via
     #   tfm (pyproject.toml)

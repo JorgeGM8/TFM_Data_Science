@@ -13,9 +13,12 @@ import streamlit as st
 import pydeck as pdk
 import json
 import unicodedata
-import joblib
 import bz2
 import pickle
+import sys
+from pathlib import Path
+sys.path.append(str(Path(__file__).resolve().parent.parent))
+from utils.cleaning import normaliza_distrito
 
 # ---------------------- CONFIGURACIÓN BÁSICA ----------------------
 
@@ -509,14 +512,14 @@ with tab1:
             f"({filtered_df.shape[0] / df.shape[0] * 100:.1f}%)")
     display_df = filtered_df.head(1000) if filtered_df.shape[0] > 1000 and st.checkbox(
         "Mostrar solo primeras 1000 filas (mejora rendimiento)", value=True) else filtered_df
-    st.dataframe(display_df, use_container_width=True, height=500)
+    st.dataframe(display_df, width="stretch", height=500)
 
 with tab2:
     if "Distrito" in filtered_df.columns and "Precio_ajustado" in filtered_df.columns:
         resumen = (filtered_df.groupby("Distrito")["Precio_ajustado"]
                    .agg(['count','mean','median','std','min','max']).round(0)
                    .sort_values('median', ascending=False))
-        st.dataframe(resumen, use_container_width=True)
+        st.dataframe(resumen, width="stretch")
     else:
         st.info("No hay suficientes datos para generar el resumen por distrito")
 
@@ -598,7 +601,7 @@ with ts_tab:
                     wide = wide[top_cols]
                     st.caption("Mostrando los 8 distritos con más datos (ajusta los filtros para afinar).")
 
-                st.line_chart(wide, use_container_width=True)
+                st.line_chart(wide, width="stretch")
                 st.caption("Mediana anual por distrito y métrica seleccionada (según los filtros de la barra lateral).")
 
 
@@ -615,7 +618,7 @@ with umap_tab:
     with tab_umap:
         umap_path = "reports/figures/umap.png"
         if umap_path:
-            st.image(str(umap_path), caption="Visualización 2D con UMAP", use_container_width=True)
+            st.image(str(umap_path), caption="Visualización 2D con UMAP", width="stretch")
             with open(umap_path, "rb") as f:
                 st.download_button("Descargar imagen (PNG)", f, file_name="umap.png")
         else:
@@ -625,7 +628,7 @@ with umap_tab:
     with tab_evo:
         evo_path = "reports/figures/porcentaje_viviendas_distrito_cluster.png"
         if evo_path:
-            st.image(str(evo_path), caption="Distribución de los clusters", use_container_width=True)
+            st.image(str(evo_path), caption="Distribución de los clusters", width="stretch")
             with open(evo_path, "rb") as f:
                 st.download_button(
                     "Descargar imagen (PNG)",
@@ -677,7 +680,7 @@ df_clusters = pd.DataFrame(clusters_data)
 
 st.dataframe(
     df_clusters,
-    use_container_width=True,
+    width="stretch",
     hide_index=True,
 )
 
@@ -842,125 +845,136 @@ except Exception as e:
     st.error(f"Error al construir el mapa: {type(e).__name__}: {e}")
     st.exception(e)
 
-# # ===================== Pestaña: Predicción de precio =====================
-# st.divider()
-# st.subheader("🔮 Predicción de precios de vivienda")
+# ===================== Pestaña: Predicción de precio =====================
+st.divider()
+st.subheader("🔮 Predicción de precios de vivienda")
 
 
-# MODEL_PATH_RF = "models/rf_final.pkl.bz2"
-# MODEL_PATH_LR = "models/lr.pkl"
+MODEL_PATH_RF = "models/rf_final.pkl.bz2"
 
-# @st.cache_resource(show_spinner=True)
-# def load_models():
-#     with bz2.open(MODEL_PATH_RF, "rb") as f:
-#         model_rf = pickle.load(f)
-#     with open(MODEL_PATH_LR, "rb") as f:
-#         model_lr = pickle.load(f)
-#     return model_rf, model_lr
+@st.cache_resource(show_spinner=True)
+def load_models():
+    with bz2.open(MODEL_PATH_RF, "rb") as f:
+        model_rf = pickle.load(f)
+    return model_rf
 
-# # --- Cargar modelo ---
-# try:
-#     model_rf, model_lr = load_models()
-#     st.success("Modelos cargados correctamente ✅")
-# except FileNotFoundError:
-#     st.error(f"No se encontró el modelo en {MODEL_PATH_RF} o {MODEL_PATH_LR}.")
-#     st.stop()
-# except Exception as e:
-#     st.error(f"Error al cargar los modelos: {type(e).__name__}: {e}")
-#     st.stop()
+# --- Cargar modelo ---
+try:
+    model_rf = load_models()
+    st.success("Modelos cargados correctamente ✅")
+except FileNotFoundError:
+    st.error(f"No se encontró el modelo en {MODEL_PATH_RF}.")
+    st.stop()
+except Exception as e:
+    st.error(f"Error al cargar los modelos: {type(e).__name__}: {e}")
+    st.stop()
 
-# # --- Interfaz de inputs ---
-# st.markdown("### Introduce las características de la vivienda:")
+# --- Interfaz de inputs ---
+st.markdown("### Introduce las características de la vivienda:")
 
-# tipos_vivienda = ["Ático", "Chalet", "Dúplex", "Estudio",
-#                   "Tríplex", "Apartamento", "Mansión", "Loft"]
+tipos_vivienda = ["Ático", "Chalet", "Dúplex", "Estudio",
+                  "Tríplex", "Apartamento", "Mansión", "Loft"]
 
-# distritos = [
-#     "CENTRO",
-#     "CHAMBERI",
-#     "ARGANZUELA",
-#     "VICALVARO",
-#     "MORATALAZ",
-#     "BARAJAS",
-#     "PUENTEDEVALLECAS",
-#     "LATINA",
-#     "VILLAVERDE",
-#     "TETUAN",
-#     "USERA",
-#     "SALAMANCA",
-#     "VILLADEVALLECAS",
-#     "CARABANCHEL",
-#     "FUENCARRALELPARDO",
-#     "CIUDADLINEAL",
-#     "MONCLOAARAVACA",
-#     "RETIRO",
-#     "CHAMARTIN",
-#     "HORTALEZA",
-#     "SANBLASCANILLEJAS"
-# ]
+distritos_visibles = [
+    "Centro",
+    "Chamberí",
+    "Arganzuela",
+    "Vicálvaro",
+    "Moratalaz",
+    "Barajas",
+    "Puente de Vallecas",
+    "Latina",
+    "Villaverde",
+    "Tetuán",
+    "Usera",
+    "Salamanca",
+    "Villa de Vallecas",
+    "Carabanchel",
+    "Fuencarral-El Pardo",
+    "Ciudad Lineal",
+    "Moncloa-Aravaca",
+    "Retiro",
+    "Chamartín",
+    "Hortaleza",
+    "San Blas-Canillejas"
+]
 
-# col1, col2, col3 = st.columns(3)
-# with col1:
-#     tipo_vivienda = st.selectbox("Tipo de vivienda", tipos_vivienda)
-#     planta = st.number_input("Planta", min_value=-1, max_value=20, value=2, step=1)
-#     tamano = st.slider("Tamaño (m²)", 30, 300, 80, step=5)
-#     habitaciones = st.number_input("Habitaciones", min_value=1, max_value=10, value=2, step=1)
-#     banos = st.number_input("Baños", min_value=1, max_value=4, value=1, step=1)
-# with col2:
-#     ascensor = st.checkbox("Ascensor", value=True)
-#     terraza = st.checkbox("Terraza", value=True)
-#     piscina = st.checkbox("Piscina", value=True)
-#     exterior = st.checkbox("Exterior", value=True)
-#     trastero = st.checkbox("Trastero", value=True)
-#     garaje = st.checkbox("Garaje", value=True)
-# with col3:
-#     distrito = st.selectbox("Distrito", distritos)
-#     ano = st.slider("Año", 2025, 2030, 2026, step=1)
+col1, col2, col3 = st.columns(3)
+with col1:
+    tipo_vivienda = st.selectbox("Tipo de vivienda", tipos_vivienda)
+    planta = st.number_input("Planta", min_value=-1, max_value=20, value=2, step=1)
+    tamano = st.slider("Tamaño (m²)", 30, 300, 80, step=5)
+    habitaciones = st.number_input("Habitaciones", min_value=1, max_value=10, value=2, step=1)
+    banos = st.number_input("Baños", min_value=1, max_value=4, value=1, step=1)
+with col2:
+    ascensor = st.checkbox("Ascensor", value=True)
+    terraza = st.checkbox("Terraza", value=True)
+    piscina = st.checkbox("Piscina", value=True)
+    exterior = st.checkbox("Exterior", value=True)
+    trastero = st.checkbox("Trastero", value=True)
+    garaje = st.checkbox("Garaje", value=True)
+with col3:
+    distrito = st.selectbox("Distrito", distritos_visibles)
+    ano = st.slider("Año", 2025, 2030, 2026, step=1)
 
-# # ================= Fase 1: Predicción socioeconómica =================
-# socio_input = pd.DataFrame([{
-#     "Distrito": distrito,
-#     "Ano": ano
-# }])
+# Distrito correcto
+distrito = normaliza_distrito(distrito)
 
-# socio_pred = model_lr.predict(socio_input)
-# socio_cols = model_lr.feature_names_out_ if hasattr(model_lr, "feature_names_out_") else [f"var_{i}" for i in range(len(socio_pred[0]))]
-# socio_df = pd.DataFrame(socio_pred, columns=socio_cols)
+# ================= Fase 1: Predicción socioeconómica =================
+socio_input = pd.DataFrame([{
+    "Distrito": distrito,
+    "Ano": ano
+}])
 
-# st.write("### 🧩 Variables socioeconómicas predichas")
-# st.dataframe(socio_df, width='stretch')
+# Cargar dataset con tendencias de variables socioeconómicas
+try:
+    tendencias = pd.read_csv("data/final/tendencias.csv")
+except FileNotFoundError:
+    st.error(f"No se encontró archivo de tendencias.")
+    st.stop()
+except Exception as e:
+    st.error(f"Error inesperado: {e}")
+    st.stop()
 
-# # --- Construir entrada para predicción ---
-# input_dict = {
-#     "Tipo_vivienda": tipo_vivienda,
-#     "Planta": planta,
-#     "Tamano": tamano,
-#     "Habitaciones": habitaciones,
-#     "Banos": banos,
-#     "Ascensor": ascensor,
-#     "Terraza": terraza,
-#     "Piscina": piscina,
-#     "Exterior": exterior,
-#     "Trastero": trastero,
-#     "Garaje": garaje,
-#     "Ano": ano,
-#     "Distrito": distrito,
-#     **socio_df.iloc[0].to_dict() # incorpora variables socioeconómicas predichas
-# }
+tendencias_distrito = tendencias[tendencias['Distrito'] == distrito].copy()
 
-# st.write("📋 **Características seleccionadas:**")
-# st.json(dict(list(input_dict.items())[:13]))
+var_socio = {col: tendencias_distrito.iloc[0][col] for col in tendencias_distrito.columns}
 
-# # --- Botón de predicción ---
-# if st.button("🔮 Predecir precio"):
-#     try:
-#         X_input = pd.DataFrame([input_dict])
-#         pred = model_rf.predict(X_input)
-#         precio_pred = float(pred[0])
+st.write("### 🧩 Variables socioeconómicas predichas")
+socio_df = pd.DataFrame([var_socio])
+st.dataframe(socio_df, width='stretch')
 
-#         st.success(f"💰 Precio estimado: **{precio_pred:,.0f} €**")
-#         st.caption("Predicción generada con el modelo entrenado de precios ajustados.")
+# --- Construir entrada para predicción ---
+input_dict = {
+    "Tipo_vivienda": tipo_vivienda,
+    "Planta": planta,
+    "Tamano": tamano,
+    "Habitaciones": habitaciones,
+    "Banos": banos,
+    "Ascensor": ascensor,
+    "Terraza": terraza,
+    "Piscina": piscina,
+    "Exterior": exterior,
+    "Trastero": trastero,
+    "Garaje": garaje,
+    "Ano": ano,
+    "Distrito": distrito,
+    **socio_df.iloc[0].to_dict() # incorporar variables socioeconómicas predichas
+}
 
-#     except Exception as e:
-#         st.error(f"Error durante la predicción: {type(e).__name__}: {e}")
+st.write("📋 **Características seleccionadas:**")
+st.json(dict(list(input_dict.items())[:13]))
 
+# --- Botón de predicción ---
+if st.button("🔮 Predecir precio"):
+    try:
+        X_input = pd.DataFrame([input_dict])
+        pred = model_rf.predict(X_input)
+        precio_pred = float(pred[0])
+
+        st.success(f"💰 Precio estimado: **{precio_pred:,.0f} €**")
+        st.caption("Predicción generada con el modelo entrenado de precios ajustados.")
+
+    except Exception as e:
+        st.error(f"Error durante la predicción: {type(e).__name__}: {e}")
+        print(e)
