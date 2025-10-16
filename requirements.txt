@@ -115,6 +115,8 @@ jupyterlab-widgets==3.0.15
     # via ipywidgets
 kiwisolver==1.4.9
     # via matplotlib
+lightgbm==4.6.0
+    # via tfm (pyproject.toml)
 llvmlite==0.45.1
     # via
     #   numba
@@ -152,6 +154,7 @@ numpy==2.3.2
     #   contourpy
     #   hdbscan
     #   imbalanced-learn
+    #   lightgbm
     #   matplotlib
     #   numba
     #   optuna
@@ -316,6 +319,7 @@ scipy==1.16.1
     # via
     #   hdbscan
     #   imbalanced-learn
+    #   lightgbm
     #   pynndescent
     #   scikit-learn
     #   skrub
