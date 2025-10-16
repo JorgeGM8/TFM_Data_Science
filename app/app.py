@@ -916,33 +916,10 @@ with col2:
 with col3:
     distrito = st.selectbox("Distrito", distritos_visibles)
     ano = st.slider("Año", 2025, 2030, 2026, step=1)
+    operacion = st.selectbox("Operacion", ["alquiler", "venta"])
 
 # Distrito correcto
 distrito = normaliza_distrito(distrito)
-
-# ================= Fase 1: Predicción socioeconómica =================
-socio_input = pd.DataFrame([{
-    "Distrito": distrito,
-    "Ano": ano
-}])
-
-# Cargar dataset con tendencias de variables socioeconómicas
-try:
-    tendencias = pd.read_csv("data/final/tendencias.csv")
-except FileNotFoundError:
-    st.error(f"No se encontró archivo de tendencias.")
-    st.stop()
-except Exception as e:
-    st.error(f"Error inesperado: {e}")
-    st.stop()
-
-tendencias_distrito = tendencias[tendencias['Distrito'] == distrito].copy()
-
-var_socio = {col: tendencias_distrito.iloc[0][col] for col in tendencias_distrito.columns}
-
-st.write("### 🧩 Variables socioeconómicas predichas")
-socio_df = pd.DataFrame([var_socio])
-st.dataframe(socio_df, width='stretch')
 
 # --- Construir entrada para predicción ---
 input_dict = {
@@ -959,18 +936,128 @@ input_dict = {
     "Garaje": garaje,
     "Ano": ano,
     "Distrito": distrito,
-    **socio_df.iloc[0].to_dict() # incorporar variables socioeconómicas predichas
+    "Operacion": operacion
 }
 
 st.write("📋 **Características seleccionadas:**")
-st.json(dict(list(input_dict.items())[:13]))
+st.json(dict(list(input_dict.items())))
+
+def predecir_precio_vivienda(vivienda:dict, df:pd.DataFrame, tendencias_socio:pd.DataFrame, modelo):
+    """
+    Predice el precio ajustado de una vivienda específica para un año futuro.
+
+    Parameters
+    ----------
+    vivienda : dict
+        Ejemplo:
+        {"Distrito": "CHAMBERI", "Tipo_vivienda": "Chalet", "Habitaciones": 3,
+         "Banos": 1, "Planta": 3, "Tamano": 90, "Ano": 2030, ...}
+
+    df : DataFrame
+        Dataset histórico con todas las variables hasta el último año real (ej. 2022).
+
+    tendencias_socio : DataFrame
+        CSV con columnas de tendencia por distrito (Esperanza_vida, etc.)
+
+    mejor_modelo : modelo entrenado
+        Modelo sklearn ya ajustado.
+    """
+    distrito = vivienda['Distrito']
+    ano_objetivo = vivienda['Ano']
+    ultimo_ano = df['Ano'].max()
+
+    # --- 1️⃣ Obtener datos históricos del distrito ---
+    df_dist = df.copy()
+    df_dist = pd.get_dummies(df_dist, drop_first=True)
+    df_dist = df_dist[df_dist[f'Distrito_{distrito}'] == 1]
+    df_dist = df_dist.sort_values('Ano')
+    fila_base = df_dist.iloc[-1]  # último año disponible
+
+    # --- 2️⃣ Actualizar variables socioeconómicas según tendencia ---
+    socio = tendencias_socio[tendencias_socio['Distrito'] == distrito].iloc[0]
+    delta = ano_objetivo - ultimo_ano
+
+    socio_vars = ['Esperanza_vida', 'Mayores_65anos%', 'Menores_18anos%',
+                  'Paro_registrado%', 'Apartamentos_turisticos',
+                  'Superficie_distrito_ha', 'Zonas_verdes%']
+
+    for var in socio_vars:
+        if var in socio:
+            fila_base[var] = fila_base[var] + socio[var] * delta
+
+    # --- 3️⃣ Calcular features temporales del distrito ---
+    fila_base['precio_prom_ano_ant'] = df_dist['Precio_ajustado'].iloc[-1]
+    fila_base['tendencia_distrito'] = df_dist['Precio_ajustado'].pct_change().iloc[-1]
+    fila_base['precio_m2_distrito_ant'] = (df_dist['Precio_ajustado'].iloc[-1] / df_dist['Tamano'].iloc[-1])
+    fila_base['ratio_vs_distrito'] = 1.0 # (no se puede calcular)  
+    fila_base['volatilidad_distrito'] = df_dist['Precio_ajustado'].std()
+
+    # --- 4️⃣ Rellenar características propias de la vivienda ---
+    tipos_vivienda_dummies = ["Ático", "Chalet", "Dúplex", "Estudio",
+                  "Tríplex", "Mansión", "Loft"]
+    
+    for var in vivienda.keys():
+        if var not in ['Tipo_vivienda', 'Distrito', 'Operacion']: # que no sean dummies
+            fila_base[var] = vivienda[var]
+        else:
+            if var == 'Tipo_vivienda':
+                for tipo in tipos_vivienda_dummies:
+                    fila_base[f'Tipo_vivienda_{tipo}'] = 0 # convertir todas a 0
+                if vivienda[var] != 'Apartamento': # si existe el dummy, ponerlo en 1
+                    fila_base[f'Tipo_vivienda_{vivienda[var]}'] = 1
+            if var == 'Operacion':
+                fila_base['Operacion_venta'] = 0 if vivienda[var] == 'alquiler' else 1
+    
+    # Variables is_missing (planta la damos nosotros, las otras son predichas)
+    fila_base['Planta_is_missing'] = 0
+    for var_missing in ['Mayores_65anos%_is_missing', 'Menores_18anos%_is_missing', 'Paro_registrado%_is_missing']:
+        fila_base[var_missing] = 1
+
+    # --- 5️⃣ Crear DataFrame ---
+    df_input = pd.DataFrame([fila_base])
+    
+    # Alinear columnas con las del modelo
+    FEATURES = ['Esperanza_vida', 'Mayores_65anos%', 'Menores_18anos%',
+       'Paro_registrado%', 'Apartamentos_turisticos', 'Superficie_distrito_ha',
+       'Zonas_verdes%', 'Habitaciones', 'Tamano', 'Garaje', 'Trastero',
+       'Piscina', 'Terraza', 'Planta', 'Exterior', 'Ascensor', 'Banos',
+       'Planta_is_missing', 'Mayores_65anos%_is_missing',
+       'Menores_18anos%_is_missing', 'Paro_registrado%_is_missing',
+       'precio_prom_ano_ant', 'tendencia_distrito', 'precio_m2_distrito_ant',
+       'ratio_vs_distrito', 'volatilidad_distrito', 'Distrito_BARAJAS',
+       'Distrito_CARABANCHEL', 'Distrito_CENTRO', 'Distrito_CHAMARTIN',
+       'Distrito_CHAMBERI', 'Distrito_CIUDADLINEAL',
+       'Distrito_FUENCARRALELPARDO', 'Distrito_HORTALEZA', 'Distrito_LATINA',
+       'Distrito_MONCLOAARAVACA', 'Distrito_MORATALAZ',
+       'Distrito_PUENTEDEVALLECAS', 'Distrito_RETIRO', 'Distrito_SALAMANCA',
+       'Distrito_SANBLASCANILLEJAS', 'Distrito_TETUAN', 'Distrito_USERA',
+       'Distrito_VICALVARO', 'Distrito_VILLADEVALLECAS', 'Distrito_VILLAVERDE',
+       'Operacion_venta', 'Tipo_vivienda_chalet', 'Tipo_vivienda_dúplex',
+       'Tipo_vivienda_estudio', 'Tipo_vivienda_loft', 'Tipo_vivienda_mansión',
+       'Tipo_vivienda_tríplex', 'Tipo_vivienda_ático']
+
+    # Asegura que todas las columnas de FEATURES existen en df_input
+    for col in FEATURES:
+        if col not in df_input.columns:
+            df_input[col] = 0
+
+    # Reordena df_input para que tenga exactamente las columnas de FEATURES y en ese orden
+    df_input = df_input[FEATURES]
+
+    # --- 6️⃣ Predicción ---
+    precio_predicho = modelo.predict(df_input)[0]
+
+    return precio_predicho
 
 # --- Botón de predicción ---
 if st.button("🔮 Predecir precio"):
     try:
-        X_input = pd.DataFrame([input_dict])
-        pred = model_rf.predict(X_input)
-        precio_pred = float(pred[0])
+        df_modelado = load_csv("data/final/viviendas_2011_2024.csv")
+        df_modelado = df_modelado[df_modelado['Ano'] == 2022].copy()
+        df_tendencias = load_csv("data/final/tendencias.csv")
+
+        precio_pred = predecir_precio_vivienda(input_dict, df_modelado, df_tendencias, model_rf)
+        print(precio_pred)
 
         st.success(f"💰 Precio estimado: **{precio_pred:,.0f} €**")
         st.caption("Predicción generada con el modelo entrenado de precios ajustados.")
