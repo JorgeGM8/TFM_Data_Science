@@ -850,24 +850,16 @@ st.divider()
 st.subheader("🔮 Predicción de precios de vivienda")
 
 
-MODEL_PATH_RF = "models/rf_final.pkl.bz2"
+MODEL_PATH_VENTA = "models/rf_final_venta.pkl.bz2"
+MODEL_PATH_ALQUILER = "models/rf_final_alquiler.pkl.bz2"
 
 @st.cache_resource(show_spinner=True)
 def load_models():
-    with bz2.open(MODEL_PATH_RF, "rb") as f:
-        model_rf = pickle.load(f)
-    return model_rf
-
-# --- Cargar modelo ---
-try:
-    model_rf = load_models()
-    st.success("Modelos cargados correctamente ✅")
-except FileNotFoundError:
-    st.error(f"No se encontró el modelo en {MODEL_PATH_RF}.")
-    st.stop()
-except Exception as e:
-    st.error(f"Error al cargar los modelos: {type(e).__name__}: {e}")
-    st.stop()
+    with bz2.open(MODEL_PATH_VENTA, "rb") as f:
+        model_rf_venta = pickle.load(f)
+    with bz2.open(MODEL_PATH_ALQUILER, "rb") as f:
+        model_rf_alquiler = pickle.load(f)
+    return model_rf_venta, model_rf_alquiler
 
 # --- Interfaz de inputs ---
 st.markdown("### Introduce las características de la vivienda:")
@@ -1007,6 +999,12 @@ def predecir_precio_vivienda(vivienda:dict, df:pd.DataFrame, tendencias_socio:pd
                     fila_base[f'Tipo_vivienda_{vivienda[var]}'] = 1
             if var == 'Operacion':
                 fila_base['Operacion_venta'] = 0 if vivienda[var] == 'alquiler' else 1
+            if var == 'Distrito':
+                for distrito in [normaliza_distrito(x) for x in distritos_visibles]:
+                    if distrito != 'ARGANZUELA':
+                        fila_base[f'Distrito_{distrito}'] = 0
+                if vivienda[var] != 'ARGANZUELA':
+                    fila_base[f'Distrito_{vivienda[var]}'] == 1
     
     # Variables is_missing (planta la damos nosotros, las otras son predichas)
     fila_base['Planta_is_missing'] = 0
@@ -1049,6 +1047,17 @@ def predecir_precio_vivienda(vivienda:dict, df:pd.DataFrame, tendencias_socio:pd
 
     return precio_predicho
 
+# --- Cargar modelo ---
+try:
+    model_rf_venta, model_rf_alquiler = load_models()
+    st.success("Modelos cargados correctamente ✅")
+except FileNotFoundError:
+    st.error(f"No se encontró el modelo en {MODEL_PATH_VENTA} o {MODEL_PATH_ALQUILER}.")
+    st.stop()
+except Exception as e:
+    st.error(f"Error al cargar los modelos: {type(e).__name__}: {e}")
+    st.stop()
+
 # --- Botón de predicción ---
 if st.button("🔮 Predecir precio"):
     try:
@@ -1056,8 +1065,10 @@ if st.button("🔮 Predecir precio"):
         df_modelado = df_modelado[df_modelado['Ano'] == 2022].copy()
         df_tendencias = load_csv("data/final/tendencias.csv")
 
-        precio_pred = predecir_precio_vivienda(input_dict, df_modelado, df_tendencias, model_rf)
-        print(precio_pred)
+        if input_dict["Operacion"] == 'venta':
+            precio_pred = predecir_precio_vivienda(input_dict, df_modelado, df_tendencias, model_rf_venta)
+        else:
+            precio_pred = predecir_precio_vivienda(input_dict, df_modelado, df_tendencias, model_rf_alquiler)
 
         st.success(f"💰 Precio estimado: **{precio_pred:,.0f} €**")
         st.caption("Predicción generada con el modelo entrenado de precios ajustados.")
