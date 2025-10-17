@@ -115,6 +115,8 @@ jupyterlab-widgets==3.0.15
     # via ipywidgets
 kiwisolver==1.4.9
     # via matplotlib
+lightgbm==4.6.0
+    # via tfm (pyproject.toml)
 llvmlite==0.45.1
     # via
     #   numba
@@ -130,6 +132,7 @@ matplotlib==3.10.5
     #   tfm (pyproject.toml)
     #   seaborn
     #   skrub
+    #   wordcloud
 matplotlib-inline==0.1.7
     # via
     #   ipykernel
@@ -151,6 +154,7 @@ numpy==2.3.2
     #   contourpy
     #   hdbscan
     #   imbalanced-learn
+    #   lightgbm
     #   matplotlib
     #   numba
     #   optuna
@@ -164,6 +168,7 @@ numpy==2.3.2
     #   statsmodels
     #   streamlit
     #   umap-learn
+    #   wordcloud
 nvidia-cublas-cu12==12.8.4.1
     # via
     #   nvidia-cudnn-cu12
@@ -235,6 +240,7 @@ pillow==11.3.0
     # via
     #   matplotlib
     #   streamlit
+    #   wordcloud
 platformdirs==4.3.8
     # via jupyter-core
 prompt-toolkit==3.0.51
@@ -303,6 +309,7 @@ rpds-py==0.27.1
     #   referencing
 scikit-learn==1.7.1
     # via
+    #   tfm (pyproject.toml)
     #   hdbscan
     #   imbalanced-learn
     #   pynndescent
@@ -312,6 +319,7 @@ scipy==1.16.1
     # via
     #   hdbscan
     #   imbalanced-learn
+    #   lightgbm
     #   pynndescent
     #   scikit-learn
     #   skrub
@@ -434,6 +442,8 @@ websockets==15.0.1
     #   undetected-chromedriver
 widgetsnbextension==4.0.14
     # via ipywidgets
+wordcloud==1.9.4
+    # via tfm (pyproject.toml)
 wsproto==1.2.0
     # via
     #   tfm (pyproject.toml)
