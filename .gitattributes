@@ -1,2 +1,4 @@
 *.parquet filter=lfs diff=lfs merge=lfs -text
 *.bz2 filter=lfs diff=lfs merge=lfs -text
+*.html linguist-detectable=false
+*.ipynb linguist-language=Python
