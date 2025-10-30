@@ -197,44 +197,93 @@ with tab1:
     # ===================== Diccionario de datos =====================
     with st.expander("📚 Diccionario de datos"):
         st.markdown("### Indicadores de accesibilidad y esfuerzo")
-
-        st.markdown("**IAV compra**: Índice de accesibilidad a la vivienda en compra.")
+        st.markdown("#### IAV de compra")
+        st.markdown("Mide la capacidad económica que tiene un hogar para adquirir una vivienda mínima.")
         st.latex(r"""
-        IAV_{compra} = 
-        \frac{\text{Renta media del hogar}}
-        {\text{Precio de venta (€/m}^{2}) \times 40}
+        IAV_{\text{compra}} \;=\; 
+        \frac{\text{Renta media bruta del hogar} \times 3}
+        {\text{Precio de venta} \left(\frac{€}{m^{2}}\right)\times A_{\text{ref}}}
         """)
+        st.markdown("*Donde:*")
+        st.latex(r"""
+        A_{\text{ref}} \;=\;
+        \begin{cases}
+        S_{\text{ref}}, & \text{si Cantidad de personas} \le 2 \\
+        \dfrac{S_{\text{ref}}}{2}\times \text{Cantidad de personas}, & \text{si Cantidad de personas} > 2
+        \end{cases}
+        """)
+        st.markdown("Se toma $S_{\\text{ref}} = 40\\,m^2$ como superficie mínima de referencia.")
+
         st.markdown("≥ 1 → accesible; < 1 → no accesible")
 
-        st.markdown("**Esfuerzo compra**: Años de renta bruta necesarios para comprar.")
+        st.markdown("#### Esfuerzo de compra")
+        st.markdown("Mide cuántos años completos de renta bruta necesita un hogar para comprar una vivienda.")
         st.latex(r"""
-        Esfuerzo_{compra} = 
-        \frac{\text{Precio de venta}}{\text{Renta bruta del hogar}}
+        Esfuerzo_{\text{compra}} \;=\;
+        \frac{\text{Precio de venta}}
+        {\text{Renta bruta anual del hogar}}
         """)
-        st.markdown("≤ 5 → poco esfuerzo; > 5 → mucho esfuerzo")
+        st.markdown("< 3 años → asequible; ≤ 5 → poco esfuerzo; > 5 → mucho esfuerzo")
 
-        st.markdown("**IAV alquiler**: Capacidad de cubrir el alquiler con la renta media del hogar.")
+        st.markdown("#### IAV de Alquiler")
+        st.markdown(
+            "Mide la capacidad del hogar para cubrir el coste anual del alquiler de una vivienda mínima."
+        )
         st.latex(r"""
-        IAV_{alquiler} = 
-        \frac{\text{Renta media del hogar}}
-        {\text{Precio de alquiler (€/m}^{2}) \times 40 \times 12}
+        IAV_{\text{alquiler}} = 
+        \frac{\text{Renta media neta del hogar}}
+        {\text{Precio alquiler} \left(\frac{€}{m^{2}\cdot mes}\right)\times A_{\text{ref}} \times 12}
         """)
+        st.markdown("*Donde:*")
+        st.latex(r"""
+        A_{\text{ref}} =
+        \begin{cases}
+        S_{\text{ref}}, & \text{si Cantidad de personas} \le 2 \\
+        \dfrac{S_{\text{ref}}}{2}\times \text{Cantidad de personas}, & \text{si Cantidad de personas} > 2
+        \end{cases}
+        """)
+        st.markdown("Se toma $S_{\\text{ref}} = 40\\,m^2$ como superficie mínima de referencia.")
+
         st.markdown("≥ 1 → cubre alquiler; < 1 → no cubre")
 
-        st.markdown("**Esfuerzo alquiler (%)**: Porcentaje de la renta destinado al alquiler.")
+        st.markdown("#### Esfuerzo de Alquiler")
+        st.markdown(
+            "Mide qué porcentaje de la renta mensual se destina al pago del alquiler."
+        )
         st.latex(r"""
-        Esfuerzo_{alquiler}(\%) = 
-        \frac{\text{Precio de alquiler (€/m}^{2}) \times 40 \times 12}
-        {\text{Renta media del hogar}} \times 100
+        Esfuerzo_{\text{alquiler}} = 
+        \frac{\text{Precio alquiler} \left(\frac{€}{m^{2}}\right) \times S_{\text{ref}} \times 12}
+        {\text{Renta media neta del hogar}}
         """)
+
         st.markdown("≤ 30% → sostenible; 30–35% → tensión; > 35% → sobreesfuerzo")
 
-        st.markdown("**Precio ajustado**: Precio corregido por distrito (método híbrido).")
+        st.markdown("#### Precio ajustado")
+        st.markdown("Precio por distrito con ruido gaussiano.")
         st.latex(r"""
-        Precio_{ajustado} = 
-        \alpha \pm (\text{15\% venta / 5\% alquiler}) + \text{ruido controlado}
+        p_i^{(aj)} = \hat{p}_i + \varepsilon_i
         """)
-        st.markdown("Alinea la proyección con el mercado.")
+
+        st.markdown("donde:")
+
+        st.latex(r"""
+        \varepsilon_i \sim N(0, \sigma_i^2)
+        """)
+
+        st.markdown("y donde:")
+
+        st.latex(r"""
+        \sigma_i = |\hat{p}_i| \cdot f
+        """)
+
+        st.markdown(r"""
+        **Siendo:**
+        - $\hat{p}_i$: cada precio predicho  
+        - $f$: el factor de ruido (0,05)  
+        - $\sigma_i$: la desviación estándar de cada precio predicho  
+        - $\varepsilon_i$: el ruido aleatorio obtenido de la distribución normal  
+        - $p_i^{(aj)}$: el valor predicho ajustado
+        """)
 
     # ---------------------- MAPA INTERACTIVO ----------------------
     st.subheader("🗺️ Mapa por distrito (elige la variable)")
